@@ -1,5 +1,4 @@
 ---
-security_group_id: sg-0bdbd70e35827b5f9
 ami_id:
   us-east-1:
     rhel84: ami-0635a8c4049019474
@@ -7,6 +6,7 @@ ami_id:
     rhel86: ami-03debf3ebf61b20cd
     windows2019: ami-041306c411c38a789
   us-east-2:
+    rhel84: ami-091e34016fb73b952
     rhel85: ami-009ed7fcb93e10f3a
     rhel86: ami-0251f146af87abba4
     windows2019: ami-017ab573701202ba1
