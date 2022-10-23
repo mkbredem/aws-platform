@@ -39,17 +39,6 @@
         tags: 
           Name: ansible-ssa-demo-vpc{{ vpc_number }}-igw
       register: r_igw
-    
-    - name: Create gateway route table
-      amazon.aws.ec2_vpc_route_table:
-        region: "{{ aws_region }}"
-        vpc_id: "{{ r_vpc_facts.vpc.id }}"
-        tags:
-          Name: ansible-ssa-demo-vpc{{ vpc_number }}-rt
-        routes:
-          - dest: 0.0.0.0/0
-            gateway_id: "{{ r_igw.gateway_id }}"
-      register: r_gateway_route_table
 
     - name: Create subnet for servers
       amazon.aws.ec2_vpc_subnet:
@@ -60,6 +49,19 @@
         tags: 
           Name: ansible-ssa-demo-vpc{{ vpc_number }}-subnet
       register: r_subnet
+    
+    - name: Create gateway route table
+      amazon.aws.ec2_vpc_route_table:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ r_vpc_facts.vpc.id }}"
+        tags:
+          Name: ansible-ssa-demo-vpc{{ vpc_number }}-rt
+        subnets:
+          - "{{ r_subnet.subnet.id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ r_igw.gateway_id }}"
+      register: r_gateway_route_table
 
     - name: Create Security group
       amazon.aws.ec2_group:
