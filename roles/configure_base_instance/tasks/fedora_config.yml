@@ -1,0 +1,4 @@
+
+- name: Config Status Message
+  debug:
+    msg: Windows Configuration is a work in progress, more to come soon

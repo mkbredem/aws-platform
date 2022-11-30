@@ -5,11 +5,13 @@ ami_id:
     rhel85: ami-06f1e6f8b3457ae7c
     rhel86: ami-03debf3ebf61b20cd
     windows2019: ami-09893189de3a034b4
+    fedora36: ami-0c8ade06c523daf14
   us-east-2:
     rhel84: ami-091e34016fb73b952
     rhel85: ami-009ed7fcb93e10f3a
     rhel86: ami-0251f146af87abba4
     windows2019: ami-017ab573701202ba1
+    fedora36: ami-00a5a17c57aea0e46
 instance_size: m4.xlarge
 ssh_key_name: ansible-ssa-demo-key
 instance_tags: {'Name':'mkb-platform-ec2-insights-demo'}

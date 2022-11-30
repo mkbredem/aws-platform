@@ -27,8 +27,14 @@
     #   loop_control:
     #     index_var: my_idx
 
+############## Series of checks to determine         ##################
+############## which flavor of OS was selected       ##################
+############## so the propper provisioning           ##################
+############## and subsequent configuration process  ##################
+############## is followed.                          ##################
+
     - name: Conditionally provision Windows ec2 instance in AWS
-      when: image_name == "windows2019"
+      when: image_name == "win*"
       amazon.aws.ec2_instance:
         region: "{{ aws_region }}"
         state: started
@@ -72,6 +78,32 @@
         network:
           assign_public_ip: yes
       register: ec2_instance_facts_rhel      
+
+    - name: Conditionally provision Fedora ec2 instance in AWS
+      when: image_name is match("fed*")
+      amazon.aws.ec2_instance:
+        region: "{{ aws_region }}"
+        count: "{{ instance_count }}"
+        state: started
+        key_name: "{{ ssh_key_name }}"
+        security_group: "{{ aws_vpcs[vpc_number]['aws_security_group_id'] }}"
+        instance_type: "{{ instance_size }}"
+        tags: 
+          Env: "{{ env_tag }}"
+          App: "{{ app_tag }}"
+          Name: "{{ name_tag }}"
+        image_id: "{{ ami_id[aws_region][image_name] }}"
+        wait: true
+        vpc_subnet_id: "{{ aws_vpcs[vpc_number]['aws_subnet_id'] }}"
+        network:
+          assign_public_ip: yes
+      register: ec2_instance_facts_fed
+
+###########                                 #############
+###########                                 #############
+########### End of conditional provisioning #############
+###########                                 #############
+###########                                 #############
 
     - name: initialize target_hosts as an empty list/array
       set_fact:

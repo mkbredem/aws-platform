@@ -6,8 +6,6 @@
     - name: install ansible-navigator
       ansible.builtin.yum: 
 
-    - name: install ansible-builder
-      ansible.builtin.yum
 
   
 # yum install python3 -y
