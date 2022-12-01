@@ -5,7 +5,7 @@ ami_id:
     rhel85: ami-06f1e6f8b3457ae7c
     rhel86: ami-03debf3ebf61b20cd
     windows2019: ami-09893189de3a034b4
-    fedora36: ami-0c8ade06c523daf14
+    fedora36: ami-0e8125571ebaa4000
   us-east-2:
     rhel84: ami-091e34016fb73b952
     rhel85: ami-009ed7fcb93e10f3a
