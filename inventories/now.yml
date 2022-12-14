@@ -1,6 +1,7 @@
 # my.SNOW.yml
 plugin: servicenow.itsm.now
 inventory_hostname_source: host_name
+enhanced: true
 columns:
   - host_name
   - name
@@ -9,21 +10,11 @@ columns:
   - os
   - classification
   - sys_id
-  - manufacturer
 compose:
   ip_addr: ip_address
   ansible_host: host_name
 keyed_groups:
   - key: os
-    separator: "_"
-    prefix: os
+    separator: ""
   - key: classification
-    separator: "_"
-    prefix: env
-  - key: manufacturer
-    separator: "_"
-    prefix: mfc
-query:
-  - classification: IN Production
-    os: = rhel_8x64
-
+    separator: ""
