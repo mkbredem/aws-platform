@@ -1,0 +1,5 @@
+- name: start_xrdp
+  service: 
+    name: xrdp
+    state: started
+    enabled: true

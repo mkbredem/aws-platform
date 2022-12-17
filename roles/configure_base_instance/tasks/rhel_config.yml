@@ -9,6 +9,7 @@
         regexp: '^disable_system_repos'
         line: 'disable_system_repos = 1'
         path: /etc/yum/pluginconf.d/subscription-manager.conf
+      when: not graphical_interface
 
     - name: unregister system from subscription manager
       ansible.builtin.command: subscription-manager unregister

@@ -6,3 +6,6 @@
 
 - include_tasks: windows_config.yml
   when: '"fedora" in image_name'
+
+- include_tasks: graphical_interface.yml
+  when: graphical_interface
