@@ -1,43 +1,48 @@
-- name: install Server with GUI
-  yum: 
-    name: 
-      - "@Server with GUI"
-      - firewalld
-    state: present
+- name: trying out become ina block   
+  block: 
 
-- name: Change default target to graphical.target
-  file:
-    src: /usr/lib/systemd/system/graphical.target
-    dest: /etc/systemd/system/default.target
-    state: link
+  - name: install Server with GUI
+    yum: 
+      name: 
+        - "@Server with GUI"
+        - firewalld
+      state: present
+  
+  - name: Change default target to graphical.target
+    file:
+      src: /usr/lib/systemd/system/graphical.target
+      dest: /etc/systemd/system/default.target
+      state: link
+  
+  - name: "Set default to graphical target"
+    command: "systemctl default"
+  
+  - name: install packages and repos to enable remote desktop
+    ansible.builtin.yum: 
+      name: 
+        - http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-1.el7.nux.noarch.rpm
+        - xrdp
+        - tigervnc-server
+      state: present
+    notify: start_xrdp
+  
+  - name: set bin_t selinux type for xrdp
+    sefcontext: 
+      target: /usr/sbin/xrdp
+      setype: bin_t
+      state: present
+  
+  - name: set bin_t selinux type for xrdp
+    sefcontext: 
+      target: /usr/sbin/xrdp-sesman
+      setype: bin_t
+      state: present
+  
+  - name: configure firewall to allw remote desktop protocol
+    ansible.posix.firewalld:
+      port: 3389/tcp
+      permanent: yes
+      immediate: yes
+      state: enabled
 
-- name: "Set default to graphical target"
-  command: "systemctl default"
-
-- name: install packages and repos to enable remote desktop
-  ansible.builtin.yum: 
-    name: 
-      - http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-1.el7.nux.noarch.rpm
-      - xrdp
-      - tigervnc-server
-    state: present
-  notify: start_xrdp
-
-- name: set bin_t selinux type for xrdp
-  sefcontext: 
-    target: /usr/sbin/xrdp
-    setype: bin_t
-    state: present
-
-- name: set bin_t selinux type for xrdp
-  sefcontext: 
-    target: /usr/sbin/xrdp-sesman
-    setype: bin_t
-    state: present
-
-- name: configure firewall to allw remote desktop protocol
-  firewalld:
-    port: 3389/tcp
-    permanent: yes
-    immediate: yes
-    state: enabled
+  become: true 
