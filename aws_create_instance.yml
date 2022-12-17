@@ -12,7 +12,7 @@
     #   register: r_subnet_info
     #   # when: vpc3 in item.value.tagssubnets | subelements(tags.Name)
     #   # loop: "{{ subnets | dict2items }}"
-    - name: subnet ID value
+    # - name: subnet ID value
       debug:
         msg: "{{ vpc_number }} has a subnet ID of {{ aws_vpcs[vpc_number]['aws_subnet_id'] }}"
     # - name: get region if no region assigned
@@ -49,6 +49,11 @@
         wait: true
         vpc_subnet_id: "{{ aws_vpcs[vpc_number]['aws_subnet_id'] }}"
         count: "{{ instance_count }}"
+        volumes:
+          - device_name: /dev/xvda
+            ebs:
+              volume_size: 16
+              delete_on_termination: true
         network:
           assign_public_ip: yes
         user_data: | 
