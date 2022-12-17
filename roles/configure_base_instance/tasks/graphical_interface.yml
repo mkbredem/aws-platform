@@ -17,10 +17,13 @@
   - name: "Set default to graphical target"
     command: "systemctl default"
   
+  - name: install xrdp repository
+    command: rpm -Uvh http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-1.el7.nux.noarch.rpm
+
   - name: install packages and repos to enable remote desktop
     ansible.builtin.yum: 
       name: 
-        - http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-1.el7.nux.noarch.rpm
+        # - http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-1.el7.nux.noarch.rpm
         - xrdp
         - tigervnc-server
       state: present
