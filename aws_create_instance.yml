@@ -28,11 +28,6 @@
         wait: true
         vpc_subnet_id: "{{ aws_vpcs[vpc_number]['aws_subnet_id'] }}"
         count: "{{ instance_count }}"
-        # volumes:
-        #   - device_name: /dev/xvda
-        #     ebs:
-        #       volume_size: 16
-        #       delete_on_termination: true
         network:
           assign_public_ip: yes
         user_data: | 
@@ -52,6 +47,11 @@
         key_name: "{{ ssh_key_name }}"
         security_group: "{{ aws_vpcs[vpc_number]['aws_security_group_id'] }}"
         instance_type: "{{ instance_size }}"
+        volumes:
+          - device_name: /dev/xvda
+            ebs:
+              volume_size: 16
+              delete_on_termination: true
         tags: 
           Env: "{{ env_tag }}"
           App: "{{ app_tag }}"
