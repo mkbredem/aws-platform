@@ -15,7 +15,6 @@ ami_id:
 instance_size: m4.xlarge
 ssh_key_name: ansible-ssa-demo-key
 instance_tags: {'Name':'mkb-platform-ec2-insights-demo'}
-ssh_key_name: ansible-ssa-demo-key
 boto_profile: "3.3"
 aws_vpcs:
   vpc3:
