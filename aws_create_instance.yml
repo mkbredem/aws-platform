@@ -6,27 +6,6 @@
 
 
   tasks:
-    # - name: get subnet info
-    #   amazon.aws.ec2_vpc_subnet_info:
-    #     region: "{{ aws_region }}"
-    #   register: r_subnet_info
-    #   # when: vpc3 in item.value.tagssubnets | subelements(tags.Name)
-    #   # loop: "{{ subnets | dict2items }}"
-    # - name: subnet ID value
-      debug:
-        msg: "{{ vpc_number }} has a subnet ID of {{ aws_vpcs[vpc_number]['aws_subnet_id'] }}"
-    # - name: get region if no region assigned
-    #   debug: 
-    #     var: r_subnet_info | dict2items
-
-    # - name: set subnet id
-    #   when: vpc3 in item['value'] | map(attribute='tags.Name') | join(',')
-    #   debug: 
-    #     msg: "index {{ my_idx }}: {{ item['value'] | map(attribute='tags.Name') }}"
-    #   loop: "{{ r_subnet_info | dict2items }}"
-    #   loop_control:
-    #     index_var: my_idx
-
 ############## Series of checks to determine         ##################
 ############## which flavor of OS was selected       ##################
 ############## so the propper provisioning           ##################
@@ -49,11 +28,11 @@
         wait: true
         vpc_subnet_id: "{{ aws_vpcs[vpc_number]['aws_subnet_id'] }}"
         count: "{{ instance_count }}"
-        volumes:
-          - device_name: /dev/xvda
-            ebs:
-              volume_size: 16
-              delete_on_termination: true
+        # volumes:
+        #   - device_name: /dev/xvda
+        #     ebs:
+        #       volume_size: 16
+        #       delete_on_termination: true
         network:
           assign_public_ip: yes
         user_data: | 
