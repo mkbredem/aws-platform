@@ -8,4 +8,4 @@
   when: '"fedora" in image_name'
 
 - include_tasks: graphical_interface.yml
-  when: graphical_interface and ('"rhel8" in image_name')
+  when: (graphical_interface == false)  and ('"rhel8" in image_name')
