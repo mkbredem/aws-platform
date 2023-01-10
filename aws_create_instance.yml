@@ -42,7 +42,7 @@
       when: image_name is match("rhel*")
       amazon.aws.ec2_instance:
         region: "{{ aws_region }}"
-        count: "{{ instance_count }}"
+        count: 1 #"{{ instance_count }}"
         state: started
         key_name: "{{ ssh_key_name }}"
         security_group: "{{ aws_vpcs[vpc_number]['aws_security_group_id'] }}"
