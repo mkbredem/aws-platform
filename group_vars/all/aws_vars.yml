@@ -17,13 +17,13 @@ ssh_key_name: ansible-ssa-demo-key-20220104
 instance_tags: {'Name':'mkb-platform-ec2-insights-demo'}
 boto_profile: "3.3"
 aws_vpcs:
-  # vpc3:
-  #   aws_subnet_id: "subnet-0aa1c2efd61231bbf"
-  #   aws_vpc_id: vpc-0a603597a0a38f1dd
-  #   aws_security_group_id: sg-081ae2df29c1e740e
-  #   aws_region: us-east-2
+  vpc3:
+    aws_subnet_id: "subnet-0aa1c2efd61231bbf"
+    aws_vpc_id: vpc-0a56e4ed93831f4ac
+    aws_security_group_id: sg-0eb817e60557f4186
+    aws_region: us-west-1
   vpc2: 
-    aws_subnet_id: "subnet-0bb8c20e71b1f849d"
+    aws_subnet_id: "subnet-0df9348ab8545bb7e"
     aws_vpc_id: vpc-0200f8c07e25f0f38
     aws_security_group_id: sg-03ff555569c77d8f1
     aws_region: us-east-2
