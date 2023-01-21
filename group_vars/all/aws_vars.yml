@@ -23,7 +23,7 @@ instance_tags: {'Name':'mkb-platform-ec2-insights-demo'}
 boto_profile: "3.3"
 aws_vpcs:
   vpc3:
-    aws_subnet_id: "subnet-0aa1c2efd61231bbf"
+    aws_subnet_id: subnet-0df9348ab8545bb7e
     aws_vpc_id: vpc-0a56e4ed93831f4ac
     aws_security_group_id: sg-0eb817e60557f4186
     aws_region: us-west-1
