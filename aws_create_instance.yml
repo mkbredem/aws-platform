@@ -13,7 +13,7 @@
 ############## is followed.                          ##################
 
     - name: Conditionally provision Windows ec2 instance in AWS
-      when: image_name == "win*"
+      when: image_name is match("win*")
       amazon.aws.ec2_instance:
         region: "{{ aws_region }}"
         state: started
