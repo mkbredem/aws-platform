@@ -30,13 +30,13 @@
     notify: start_xrdp
   
   - name: set bin_t selinux type for xrdp
-    sefcontext: 
+    community.general.sefcontext:
       target: /usr/sbin/xrdp
       setype: bin_t
       state: present
   
   - name: set bin_t selinux type for xrdp
-    sefcontext: 
+    community.general.sefcontext: 
       target: /usr/sbin/xrdp-sesman
       setype: bin_t
       state: present
