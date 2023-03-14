@@ -14,4 +14,4 @@ vsftpd_selinux_booleans:
   - name: ftpd_full_access
     state: true
     persistent: true
-remote_directory: /var/ftp_home_dir
+remote_directory: /ftp_home_dir
