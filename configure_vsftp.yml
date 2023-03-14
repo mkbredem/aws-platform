@@ -1,4 +1,5 @@
 - name: configure vsftp
   hosts: target_hosts
 
-  include_role: vsftp_master
+  tasks:
+    - include_role: vsftp_master
