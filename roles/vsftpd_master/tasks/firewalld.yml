@@ -31,3 +31,4 @@
   become: true
   when: "apache_firewall_configure"
   tags: notest
+  ignore_errors: true
