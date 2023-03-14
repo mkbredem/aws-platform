@@ -4,4 +4,4 @@
   tasks:
     - name: configure vsftp
       include_role: 
-        name: vsftp_master
+        name: vsftpd_master
