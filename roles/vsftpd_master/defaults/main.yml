@@ -14,5 +14,11 @@ vsftp_selinux_booleans:
   - name: ftpd_full_access
     state: true
     persistent: true
-apache_firewall_rules: 
-  - ""
+vsftpd_enable_selinux: true
+vsftp_selinux_booleans:
+  - name: ftp_home_dir
+    state: true
+    persistent: true
+  - name: ftpd_full_access
+    state: true
+    persistent: true
