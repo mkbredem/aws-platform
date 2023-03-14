@@ -2,4 +2,6 @@
   hosts: target_hosts
 
   tasks:
-    - include_role: vsftp_master
+    - name: configure vsftp
+      include_role: 
+        name: vsftp_master
