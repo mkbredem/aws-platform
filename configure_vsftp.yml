@@ -1,5 +1,5 @@
 - name: configure vsftp
-  hosts: target_hosts
+  hosts: "{{ target_hosts }}"
 
   tasks:
     - name: configure vsftp
