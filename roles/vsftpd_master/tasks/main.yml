@@ -24,6 +24,12 @@
       skip: true
   tags: vars
 
+- name: create remote directory
+  file:
+    state: directory
+    recurse: yes
+    path: "{{ remote_directory }}"
+
 - include: install.yml
 - include: template.yml
 - include: firewalld.yml

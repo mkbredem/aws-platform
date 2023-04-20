@@ -1,4 +1,7 @@
 - name: configure vsftp
-  hosts: target_hosts
+  hosts: "{{ target_hosts }}"
 
-  include_role: vsftp_master
+  tasks:
+    - name: configure vsftp
+      include_role: 
+        name: vsftpd_master

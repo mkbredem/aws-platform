@@ -11,3 +11,4 @@
     - ansible_selinux.status == "enabled"
     - vsftpd_enable_selinux
   become: true
+  ignore_errors: true
