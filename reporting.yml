@@ -31,12 +31,12 @@
     - name: gather NVREA 
       shell: rpm -qa --queryformat "%{NAME} %{VERSION} %{RELEASE} %{EPOCH} %{ARCH}\n"
       register: r_{{ report_type }}
-      when: report_type = "NVREA"
+      when: report_type == "NVREA"
 
     - name: gather available security updates 
       shell: yum updateinfo list security | grep -ie rhsa
       register: r_{{ report_type }}
-      when: report_type = "security_updates"
+      when: report_type == "security_updates"
 
 #    - name: gather available security updates (verbose)
 #      command: yum updateinfo list security
