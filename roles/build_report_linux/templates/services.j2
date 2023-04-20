@@ -16,7 +16,7 @@
     {% for servicesname in hostvars[linux_host]['services']|sort %}
     {% set service = hostvars[linux_host]['services'][servicesname] %}
         <tr>
-            <td>{{ service }} </td>
+{#            <td>{{ service }} </td> #}
             <td>{{service['name']}}</td>
             <td>{{service['state']}}</td>
             <td>{{service['source']}}</td>
