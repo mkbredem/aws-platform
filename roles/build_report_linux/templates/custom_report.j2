@@ -16,7 +16,7 @@
                     <td>NO RESULTS</td>
                 </tr>     
         {% else %}      
-            {% for key in hostvars[linux_host][r_NVREA]['stdout_lines'] %} 
+            {% for key in hostvars[linux_host]['r_NVREA']['stdout_lines'] %} 
                 <tr>
                     <td>{{key}}</td>
                 </tr>   
