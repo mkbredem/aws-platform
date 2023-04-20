@@ -36,7 +36,7 @@
     - name: gather available security updates 
       shell: yum updateinfo list security | grep -ie rhsa
       register: r_{{ report_type }}
-      when_ report_type = "security_updates"
+      when: report_type = "security_updates"
 
 #    - name: gather available security updates (verbose)
 #      command: yum updateinfo list security
