@@ -19,6 +19,7 @@
   ignore_unreachable: yes
   vars: 
     file_path: /var/www/html
+    report_type: security_updates 
     
   tasks:  
     - name: gather installed packages data
@@ -27,9 +28,15 @@
     - name: gather services data
       service_facts: 
 
+    - name: gather NVREA 
+      shell: rpm -qa --queryformat "%{NAME} %{VERSION} %{RELEASE} %{EPOCH} %{ARCH}\n"
+      register: r_{{ report_type }}
+      when: report_type = "NVREA"
+
     - name: gather available security updates 
       shell: yum updateinfo list security | grep -ie rhsa
-      register: r_security_updates
+      register: r_{{ report_type }}
+      when_ report_type = "security_updates"
 
 #    - name: gather available security updates (verbose)
 #      command: yum updateinfo list security
