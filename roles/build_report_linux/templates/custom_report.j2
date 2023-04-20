@@ -10,13 +10,26 @@
         </tr>
     </thead>
     <tbody>
-    {% if hostvars[linux_host][report_type] is defined %}
-        {% if hostvars[linux_host][report_type]['rc'] == 1 %}
+    {% if hostvars[linux_host]['r_NVREA'] is defined %}
+        {% if hostvars[linux_host]['r_NVREA']['rc'] == 1 %}
                 <tr>
                     <td>NO RESULTS</td>
                 </tr>     
         {% else %}      
-            {% for key in hostvars[linux_host][report_type]['stdout_lines'] %} 
+            {% for key in hostvars[linux_host][r_NVREA]['stdout_lines'] %} 
+                <tr>
+                    <td>{{key}}</td>
+                </tr>   
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+    {% if hostvars[linux_host]['r_security_updates'] is defined %}
+        {% if hostvars[linux_host]['r_NVREA']['rc'] == 1 %}
+                <tr>
+                    <td>NO RESULTS</td>
+                </tr>     
+        {% else %}      
+            {% for key in hostvars[linux_host]['r_security_updates']['stdout_lines'] %} 
                 <tr>
                     <td>{{key}}</td>
                 </tr>   

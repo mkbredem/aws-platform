@@ -38,14 +38,6 @@
       register: r_security_updates
       when: report_type == "security_updates"
 
-#    - name: gather available security updates (verbose)
-#      command: yum updateinfo list security
-#      register: r_security_updates
-
-    - name: show sec updates w/ description
-      debug:  
-        var: r_security_updates.stdout_lines
-
     - name: run linux package and service report
       include_role:
         name:  build_report_linux
