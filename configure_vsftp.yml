@@ -1,7 +1,41 @@
-- name: configure vsftp
+---
+- name: Configure vsftpd server for anonymous file retrieval
   hosts: "{{ target_hosts }}"
+  become: true
+  vars:
+    anonymous_directory: /tmp/
 
   tasks:
-    - name: configure vsftp
-      include_role: 
-        name: vsftpd_master
+    - name: Install vsftpd package
+      yum:
+        name: vsftpd
+        state: present
+      become: true
+
+    - name: Configure vsftpd.conf
+      blockinfile:
+        path: /etc/vsftpd/vsftpd.conf
+        block: |
+          # Enable anonymous access
+          anonymous_enable=YES
+          no_anon_password=YES
+
+          # Restrict anonymous users to a specific directory
+          anon_root={{ anonymous_directory }}
+          anon_upload_enable=NO
+          anon_mkdir_write_enable=NO
+
+          # Allow local users to login
+          local_enable=YES
+
+          # Disable write access for local users
+          write_enable=NO
+
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+
+    - name: Start and enable vsftpd service
+      service:
+        name: vsftpd
+        state: started
+        enabled: true
+

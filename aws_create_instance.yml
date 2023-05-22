@@ -37,7 +37,7 @@
           Invoke-Expression ((New-Object System.Net.Webclient).DownloadString('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1'))
           </powershell>
       register: ec2_instance_facts_win
-
+      
     - name: Conditionally provision RHEL ec2 instance in AWS
       when: image_name is match("rhel*")
       amazon.aws.ec2_instance:
