@@ -3,8 +3,8 @@
   hosts: "{{ target_hosts }}"
   vars:
     subscription: 
-      rhel_development_teams: 8a82c58b8086238501808ba2619b113a
-      rhel_smart_management_std: 8a82c68d80862c7301808ba1de7157fe
+      rhel_development_teams: 2c946cd0887328c30188a02782cf3b9e
+      rhel_smart_management_std: 2c946cd0887328c30188a02722753b90
 
   roles: 
     - configure_base_instance
