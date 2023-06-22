@@ -34,7 +34,7 @@ aws_vpcs:
     aws_security_group_id: sg-03ff555569c77d8f1
     aws_region: us-east-2
   vpc1: 
-    aws_subnet_id: subnet-0b90af5c4a0bc052e
+    aws_subnet_id: 'subnet-0b90af5c4a0bc052e'
     aws_vpc_id: vpc-0e3d49d7d2475d182
     aws_security_group_id: sg-08211c22a9079d0c1
     aws_region: us-east-1
