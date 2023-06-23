@@ -106,6 +106,7 @@
       amazon.aws.ec2_key:
         name: ansible-ssa-demo-key-20220104
         key_material: "{{ ansible_ssa_demo_key_20220104_pub }}"
+        region: "{{ aws_region }}"
 #    - name: attach internet gateway to vpc_subnet_id
 
 #    - name: add route table (add 0.0.0.0/0 target internet gateway ID)
