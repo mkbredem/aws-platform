@@ -19,7 +19,7 @@ ami_id:
     windows2019: 
     fedora36:    
 instance_size: m4.xlarge
-ssh_key_name: ansible-ssa-demo-key-20220104
+ssh_key_name: ansible-ssa-demo-key-20230621
 instance_tags: {'Name':'mkb-platform-ec2-insights-demo'}
 boto_profile: "3.3"
 aws_vpcs:
