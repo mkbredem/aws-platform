@@ -31,6 +31,10 @@
         tenancy: default
       register: r_vpc_facts
 
+    - name: Wait for VPC to initialize
+      wait_for:
+        timeout: 60
+
     - name: Create Internet gateway
       amazon.aws.ec2_vpc_igw:
         vpc_id: "{{ r_vpc_facts.vpc.id }}"
