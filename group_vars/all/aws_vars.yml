@@ -1,9 +1,8 @@
 ---
 ami_id:
   us-east-1:
-    rhel84: ami-0635a8c4049019474
-    rhel85: ami-06f1e6f8b3457ae7c
     rhel86: ami-03debf3ebf61b20cd
+    rhel88: ami-046981daef262e1d8
     windows2019: ami-04b707657b5bf6b20
     windows2019_ami_name: EC2LaunchV2-Windows_Server-2019-English-Full-Base-2023.06.14
     fedora36: ami-0e8125571ebaa4000
