@@ -1,0 +1,59 @@
+---
+- name: Expand EBS Volume on EC2 Instance
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    aws_region: us-east-1
+    # instance_id: "your_ec2_instance_id"
+    # volume_id: "your_ebs_volume_id"
+    add_size_gb: 100  # New size for the EBS volume in gigabytes
+
+  tasks:
+    - name: gather running instance information
+      amazon.aws.ec2_instance_info:
+        region: "{{ aws_region }}"
+      register: ec2_instance_facts
+
+    - name: show instance gather_facts
+      debug: 
+        vars: ec2_instance_facts
+    # - debug:  
+    #     msg: "{{ item.public_dns_name }}"
+    #   loop: "{{ ec2_instance_facts.instances }}"
+
+    # - name: shut down instances
+    #   amazon.aws.ec2_instance:
+    #     region: "{{ aws_region }}"
+    #     instance_ids: "{{ item.instance_id }}"
+    #     state: stopped
+    #   loop: "{{ ec2_instance_facts.instances }}"
+
+    # - name: Expand EBS Volume
+    #   ec2_vol_info:
+    #     aws_access_key: "{{ aws_access_key }}"
+    #     aws_secret_key: "{{ aws_secret_key }}"
+    #     region: "{{ region }}"
+    #     instance: "{{ instance_id }}"
+    #     vol_id: "{{ volume_id }}"
+    #   register: vol_info
+
+    # - name: Modify EBS Volume Size
+    #   ec2_vol:
+    #     aws_access_key: "{{ aws_access_key }}"
+    #     aws_secret_key: "{{ aws_secret_key }}"
+    #     region: "{{ region }}"
+    #     vol_id: "{{ volume_id }}"
+    #     state: "present"
+    #     size: "{{ new_size_gb }}"
+    #   when: vol_info.size < new_size_gb
+
+    # - name: Wait for Volume Resize
+    #   ec2_vol_wait:
+    #     aws_access_key: "{{ aws_access_key }}"
+    #     aws_secret_key: "{{ aws_secret_key }}"
+    #     region: "{{ region }}"
+    #     vol_id: "{{ volume_id }}"
+    #     state: "present"
+    #     wait_timeout: 600
+    #   when: vol_info.size < new_size_gb
