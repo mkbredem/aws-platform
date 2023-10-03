@@ -31,10 +31,10 @@
     - name: make subscription-manager the default repo manager
       ansible.builtin.shell: subscription-manager config --rhsm.manage_repos=1
 
-    - name: Enable AAP 2.3 rhsm repository in redehat.repo file
-      community.general.rhsm_repository:
-        name: ansible-automation-platform-2.3-for-rhel-8-x86_64-rpms
-        state: enabled
+    # - name: Enable AAP 2.3 rhsm repository in redehat.repo file
+    #   community.general.rhsm_repository:
+    #     name: ansible-automation-platform-2.3-for-rhel-8-x86_64-rpms
+    #     state: enabled
 
     # - name: install base packages
     #   ansible.builtin.yum:
