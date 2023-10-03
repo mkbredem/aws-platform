@@ -1,5 +1,5 @@
 - include_tasks: rhel_config.yml
-  when: '"rhel8" in image_name'
+  when: '"rhel" in image_name'
 
 - include_tasks: windows_config.yml
   when: image_name == "windows2019"
