@@ -52,7 +52,7 @@
 
     - name: install and configure insights insights-client
       include_role:
-        - name: redhat.insights.insights_client
+        name: redhat.insights.insights_client
       vars: 
       # provided via custom credential in controller
         redhat_portal_username: "{{ lookup('env', 'PORTAL_USERNAME') }}"
