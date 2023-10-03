@@ -1,4 +1,5 @@
-- name: trying out become ina block   
+- name: Configuration tasks with become   
+  become: true  
   block: 
 
     - name: Disable rhui repositories
@@ -35,47 +36,77 @@
         name: ansible-automation-platform-2.3-for-rhel-8-x86_64-rpms
         state: enabled
 
-    - name: install base packages
-      ansible.builtin.yum:
-        name: 
-          - ansible
-          - rhc-worker-playbook
-          - rhc
-        state: present
+    # - name: install base packages
+    #   ansible.builtin.yum:
+    #     name: 
+    #       - ansible
+    #       - rhc-worker-playbook
+    #       - rhc
+    #     state: present
 
-    - name: run Red Hat Connector
-      ansible.builtin.command: rhc connect -u {{ lookup('env', 'PORTAL_USERNAME') }} -p {{ lookup('env', 'PORTAL_PASSWORD') }}
+    # - name: install base packages
+    #   ansible.builtin.yum:
+    #     name: 
+    #       - insights-client
+    #     state: present
 
-    - name: give insights time to finish setup after running RHC
-      ansible.builtin.wait_for: 
-        timeout: 60
+    - name: install and configure insights insights-client
+      include_role:
+        - name: redhat.insights.insights_client
+      vars: 
+      # provided via custom credential in controller
+        redhat_portal_username: "{{ lookup('env', 'PORTAL_USERNAME') }}"
+        redhat_portal_password: "{{ lookup('env', 'PORTAL_PASSWORD') }}"
+      # provided via survey
+        insights_display_name: "{{ name_tag }}"
+        insights_tags:
+          application: "{{ app_tag }}"
+          environment: "{{ env_tag }}"
+          name: "{{ name_tag }}"
 
-    - name: ensure tags.yml exists
-      file:
-        state: touch
-        group: root
-        owner: root
-        mode: 0644
-        dest: /etc/insights-client/tags.yaml
+    - name: Register systems to RHC
+      include_role:
+        - name: redhat.rhel_system_roles.rhc
+      vars:
+        rhc_auth:
+          login:
+            username: "{{ lookup('env', 'PORTAL_USERNAME') }}"
+            password: "{{ lookup('env', 'PORTAL_PASSWORD') }}"
 
-    - name: add groups to be used in insights
-      lineinfile: 
-        line: "{{item.key}}: {{ item.value }}"
-        path: /etc/insights-client/tags.yaml
-        group: root
-        owner: root
-        mode: 0644
-      loop:
-        - key: application
-          value: "{{ app_tag }}"
-        - key: environment
-          value: "{{ env_tag }}"
-        - key: name
-          value: "{{ name_tag }}"
-      ignore_errors: True
+    # - name: run Red Hat Connector
+    #   ansible.builtin.command: rhc connect -u {{ lookup('env', 'PORTAL_USERNAME') }} -p {{ lookup('env', 'PORTAL_PASSWORD') }}
 
-    - name: register system to insights
-      shell: insights-client --register
+
+    # - name: give insights time to finish setup after running RHC
+    #   ansible.builtin.wait_for: 
+    #     timeout: 60
+
+    # - name: ensure tags.yml exists
+    #   file:
+    #     state: touch
+    #     group: root
+    #     owner: root
+    #     mode: 0644
+    #     dest: /etc/insights-client/tags.yaml
+
+    # - name: add groups to be used in insights
+    #   lineinfile: 
+    #     line: "{{item.key}}: {{ item.value }}"
+    #     path: /etc/insights-client/tags.yaml
+    #     group: root
+    #     owner: root
+    #     mode: 0644
+    #   loop:
+    #     - key: application
+    #       value: "{{ app_tag }}"
+    #     - key: environment
+    #       value: "{{ env_tag }}"
+    #     - key: name
+    #       value: "{{ name_tag }}"
+    #   ignore_errors: True
+
+    # - name: register system to insights
+    #   shell: insights-client --register
 
 #  - name: register system to insights
 #    insights-register:
@@ -110,4 +141,3 @@
         update_password: always
         #PORTAL_USERNAME and PORTAL_PASSWORD are defined as custom credential
 
-  become: true  
