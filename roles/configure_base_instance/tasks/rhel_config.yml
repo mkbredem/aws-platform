@@ -66,7 +66,7 @@
 
     - name: Register systems to RHC
       include_role:
-        - name: redhat.rhel_system_roles.rhc
+        name: redhat.rhel_system_roles.rhc
       vars:
         rhc_auth:
           login:
