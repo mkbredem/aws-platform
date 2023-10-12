@@ -68,10 +68,12 @@
       include_role:
         name: redhat.rhel_system_roles.rhc
       vars:
+        activationKey: rhc_connector
         rhc_auth:
           login:
             username: "{{ lookup('env', 'PORTAL_USERNAME') }}"
             password: "{{ lookup('env', 'PORTAL_PASSWORD') }}"
+        
 
     # - name: run Red Hat Connector
     #   ansible.builtin.command: rhc connect -u {{ lookup('env', 'PORTAL_USERNAME') }} -p {{ lookup('env', 'PORTAL_PASSWORD') }}
