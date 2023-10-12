@@ -50,6 +50,17 @@
     #       - insights-client
     #     state: present
 
+
+    - name: Register systems to RHC
+      include_role:
+        name: redhat.rhel_system_roles.rhc
+      vars:
+        activationKey: rhc_connector
+        rhc_auth:
+          login:
+            username: "{{ lookup('env', 'PORTAL_USERNAME') }}"
+            password: "{{ lookup('env', 'PORTAL_PASSWORD') }}"
+
     - name: install and configure insights insights-client
       include_role:
         name: redhat.insights.insights_client
@@ -63,17 +74,6 @@
           application: "{{ app_tag }}"
           environment: "{{ env_tag }}"
           name: "{{ name_tag }}"
-
-    - name: Register systems to RHC
-      include_role:
-        name: redhat.rhel_system_roles.rhc
-      vars:
-        activationKey: rhc_connector
-        rhc_auth:
-          login:
-            username: "{{ lookup('env', 'PORTAL_USERNAME') }}"
-            password: "{{ lookup('env', 'PORTAL_PASSWORD') }}"
-        
 
     # - name: run Red Hat Connector
     #   ansible.builtin.command: rhc connect -u {{ lookup('env', 'PORTAL_USERNAME') }} -p {{ lookup('env', 'PORTAL_PASSWORD') }}
