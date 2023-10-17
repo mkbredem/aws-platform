@@ -1,6 +1,6 @@
 ---
 - name: just messing around
-  hosts: localhost
+  hosts: all
   vars: 
     some_dictionary: 
       - key: k1
