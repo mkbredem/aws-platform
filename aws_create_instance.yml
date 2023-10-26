@@ -152,27 +152,27 @@
   when: image_name is match("Win.*")
   register: ec2_instance_facts_win
 
-    - name: initialize target_hosts as an empty list/array
-      set_fact:
-        target_hosts: []
+- name: initialize target_hosts as an empty list/array
+  set_fact:
+    target_hosts: []
 
-    - name: load Windows instances into target_hosts list (used in future plays for config)
-      when: image_name == "windows2019" 
-      set_stats:
-        data: 
-          target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
-      loop: "{{ ec2_instance_facts_win.instances }}"
+- name: load Windows instances into target_hosts list (used in future plays for config)
+  when: image_name == "windows2019" 
+  set_stats:
+    data: 
+      target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
+  loop: "{{ ec2_instance_facts_win.instances }}"
 
-    - name: load RHEL instances into target_hosts list (used in future plays for config)
-      when: image_name is match("rhel*")
-      set_stats:
-        data: 
-          target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
-      loop: "{{ ec2_instance_facts_rhel.instances }}"
+- name: load RHEL instances into target_hosts list (used in future plays for config)
+  when: image_name is match("rhel*")
+  set_stats:
+    data: 
+      target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
+  loop: "{{ ec2_instance_facts_rhel.instances }}"
 
-    - name: give instance time to initialize before configuration
-      ansible.builtin.wait_for: 
-        timeout: 150
+- name: give instance time to initialize before configuration
+  ansible.builtin.wait_for: 
+    timeout: 150
 
 
 
