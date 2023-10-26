@@ -16,7 +16,7 @@ ami_id:
     windows2019: 
     fedora36:    
 instance_size: m4.xlarge
-ssh_key_name: ansible-ssa-demo-key-20230621
+# ssh_key_name: ansible-ssa-demo-key-20230621
 instance_tags: {'Name':'mkb-platform-ec2-insights-demo'}
 boto_profile: "3.3"
 aws_vpcs:
@@ -41,3 +41,15 @@ graphical_interface: false
   #   aws_vpc_id: vpc-09654defecfdfffa1
   #   aws_security_group_id: sg-07132b7655c4910cc
   #   aws_region: us-east-1
+_image_id_: ami-08b207be5fdce406f
+_region_: us-east-1
+vpc_name: "mbredeme VPC"
+_vpc_cidr_block_: '12.0.0.0/16'
+igw_name: "mbredeme IGW"
+_subnet_cidr_: '12.0.1.0/24'
+subnet_name: "mbredeme Subnet"
+_route_table_name_: "mbredeme Route Table"
+destination_cidr_block: '0.0.0.0/0'
+_security_group_: "mbredemeSG"
+_key_name_: "mbredemekey"
+_instance_type_: "t2.micro"

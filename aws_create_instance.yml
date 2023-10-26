@@ -3,7 +3,8 @@
   hosts: localhost
   gather_facts: false
 # vars: defaults in group_vars/all/aws_vars.yml
-
+  roles:
+    - name: aws_vpc_init
 
   tasks:
 ############## Series of checks to determine         ##################
@@ -12,82 +13,144 @@
 ############## and subsequent configuration process  ##################
 ############## is followed.                          ##################
 
-    - name: Conditionally provision Windows ec2 instance in AWS
-      when: image_name is match("win*")
-      amazon.aws.ec2_instance:
-        region: "{{ aws_region }}"
-        state: started
-        key_name: "{{ ssh_key_name }}"
-        security_group: "{{ aws_vpcs[vpc_number]['aws_security_group_id'] }}"
-        instance_type: "{{ instance_size }}"
-        tags: 
-          Env: "{{ env_tag }}"
-          App: "{{ app_tag }}"
-          Name: "{{ name_tag }}"
-        image_id: "{{ ami_id[aws_region][image_name] }}"
-        wait: true
-        vpc_subnet_id: "{{ aws_vpcs[vpc_number]['aws_subnet_id'] }}"
-        count: "{{ instance_count }}"
-        network:
-          assign_public_ip: yes
-        user_data: | 
-          <powershell>
-          $admin = [adsi]("WinNT://./administrator, user")
-          $admin.PSBase.Invoke("SetPassword", "myTempPassword123!")
-          Invoke-Expression ((New-Object System.Net.Webclient).DownloadString('https://raw.githubusercontent.com/shadowman-lab/Ansible-Provision/main/roles/shadowman_provision/files/ConfigureRemotingForAnsible.ps1'))
-          </powershell>
-      register: ec2_instance_facts_win
-      
-    - name: Conditionally provision RHEL ec2 instance in AWS
-      when: image_name is match("rhel*")
-      amazon.aws.ec2_instance:
-        region: "{{ aws_region }}"
-        count: "{{ instance_count }}"
-        state: started
-        key_name: "{{ ssh_key_name }}"
-        security_group: "{{ aws_vpcs[vpc_number]['aws_security_group_id'] }}"
-        instance_type: "{{ instance_size }}"
-        volumes:
-          - device_name: /dev/xvda
-            ebs:
-              volume_size: 40
-              delete_on_termination: true
-        tags: 
-          Env: "{{ env_tag }}"
-          App: "{{ app_tag }}"
-          Name: "{{ name_tag }}"
-        image_id: "{{ ami_id[aws_region][image_name] }}"
-        wait: true
-        vpc_subnet_id: "{{ aws_vpcs[vpc_number]['aws_subnet_id'] }}"
-        network:
-          assign_public_ip: yes
-      register: ec2_instance_facts_rhel      
-
-    - name: Conditionally provision Fedora ec2 instance in AWS
-      when: image_name is match("fed*")
-      amazon.aws.ec2_instance:
-        region: "{{ aws_region }}"
-        # count: "{{ instance_count }}"
-        state: started
-        key_name: "{{ ssh_key_name }}"
-        security_group: "{{ aws_vpcs[vpc_number]['aws_security_group_id'] }}"
-        instance_type: "{{ instance_size }}"
-        tags: 
-          Env: "{{ env_tag }}"
-          App: "{{ app_tag }}"
-          Name: "{{ name_tag }}"
-        image_id: "{{ ami_id[aws_region][image_name] }}"
-        wait: true
-        vpc_subnet_id: "{{ aws_vpcs[vpc_number]['aws_subnet_id'] }}"
-        network:
-          assign_public_ip: yes
-      register: ec2_instance_facts_fed
+#    - name: Conditionally provision Windows ec2 instance in AWS
+#      when: image_name is match("win*")
+#      amazon.aws.ec2_instance:
+#        region: "{{ aws_region }}"
+#        state: started
+#        key_name: "{{ ssh_key_name }}"
+#        security_group: "{{ aws_vpcs[vpc_number]['aws_security_group_id'] }}"
+#        instance_type: "{{ instance_size }}"
+#        tags: 
+#          Env: "{{ env_tag }}"
+#          App: "{{ app_tag }}"
+#          Name: "{{ name_tag }}"
+#        image_id: "{{ ami_id[aws_region][image_name] }}"
+#        wait: true
+#        vpc_subnet_id: "{{ aws_vpcs[vpc_number]['aws_subnet_id'] }}"
+#        count: "{{ instance_count }}"
+#        network:
+#          assign_public_ip: yes
+#        user_data: | 
+#          <powershell>
+#          $admin = [adsi]("WinNT://./administrator, user")
+#          $admin.PSBase.Invoke("SetPassword", "myTempPassword123!")
+#          Invoke-Expression ((New-Object System.Net.Webclient).DownloadString('https://raw.githubusercontent.com/shadowman-lab/Ansible-Provision/main/roles/shadowman_provision/files/ConfigureRemotingForAnsible.ps1'))
+#          </powershell>
+#      register: ec2_instance_facts_win
+#      
+#    - name: Conditionally provision RHEL ec2 instance in AWS
+#      when: image_name is match("rhel*")
+#      amazon.aws.ec2_instance:
+#        region: "{{ aws_region }}"
+#        count: "{{ instance_count }}"
+#        state: started
+#        key_name: "{{ ssh_key_name }}"
+#        security_group: "{{ aws_vpcs[vpc_number]['aws_security_group_id'] }}"
+#        instance_type: "{{ instance_size }}"
+#        volumes:
+#          - device_name: /dev/xvda
+#            ebs:
+#              volume_size: 40
+#              delete_on_termination: true
+#        tags: 
+#          Env: "{{ env_tag }}"
+#          App: "{{ app_tag }}"
+#          Name: "{{ name_tag }}"
+#        image_id: "{{ ami_id[aws_region][image_name] }}"
+#        wait: true
+#        vpc_subnet_id: "{{ aws_vpcs[vpc_number]['aws_subnet_id'] }}"
+#        network:
+#          assign_public_ip: yes
+#      register: ec2_instance_facts_rhel      
+#
+#    - name: Conditionally provision Fedora ec2 instance in AWS
+#      when: image_name is match("fed*")
+#      amazon.aws.ec2_instance:
+#        region: "{{ aws_region }}"
+#        # count: "{{ instance_count }}"
+#        state: started
+#        key_name: "{{ ssh_key_name }}"
+#        security_group: "{{ aws_vpcs[vpc_number]['aws_security_group_id'] }}"
+#        instance_type: "{{ instance_size }}"
+#        tags: 
+#          Env: "{{ env_tag }}"
+#          App: "{{ app_tag }}"
+#          Name: "{{ name_tag }}"
+#        image_id: "{{ ami_id[aws_region][image_name] }}"
+#        wait: true
+#        vpc_subnet_id: "{{ aws_vpcs[vpc_number]['aws_subnet_id'] }}"
+#        network:
+#          assign_public_ip: yes
+#      register: ec2_instance_facts_fed
 
 ###########                                 #############
 ###########                                 #############
 ########### End of conditional provisioning #############
 ###########                                 #############
 ###########                                 #############
+
+- name: Change image ID if running Windows
+  ansible.builtin.set_fact:
+    _image_id_: 'ami-04b707657b5bf6b20'
+  when: image_name is match("win*")
+
+- name: Change image ID if running RHEL8
+  ansible.builtin.set_fact:
+    _image_id_: 'ami-046981daef262e1d8'
+  when: image_name == "RHEL8"
+
+- name: Change image ID if running RHEL9
+  ansible.builtin.set_fact:
+    _image_id_: 'ami-093e0758ef99ec8a4'
+  when: image_name == "RHEL9"
+
+- name: Create EC2 instance with public IP for RHEL
+  amazon.aws.ec2_instance:
+    name: "{{ item }}"
+    key_name: "{{ _key_name_ }}"
+    vpc_subnet_id: "{{ vpcsubnet.subnet.id }}"
+    instance_type: "{{ _instance_type_ }}"
+    security_group: "{{ _security_group_ }}_RHEL"
+    state: running
+    wait: true
+    network:
+      assign_public_ip: true
+    image_id: "{{ _image_id_ }}"
+    region: "{{ _region_ }}"
+    tags:
+      Name: "{{ item }}"
+      owner: "{{ owner }}"
+      env: "{{ env }}"
+      operating_system: "RHEL"
+      usage: "mbredemedemos"
+  loop: "{{ vm_names }}"
+  when: image_name is match("RHEL.*")
+  register: ec2_instance_facts_rhel
+
+- name: Create EC2 instance with public IP for Windows
+  amazon.aws.ec2_instance:
+    name: "{{ item }}"
+    key_name: "{{ _key_name_ }}"
+    vpc_subnet_id: "{{ vpcsubnet.subnet.id }}"
+    instance_type: "{{ _instance_type_ }}"
+    security_group: "{{ _security_group_ }}_Windows"
+    state: running
+    wait: true
+    network:
+      assign_public_ip: true
+    image_id: "{{ _image_id_ }}"
+    region: "{{ _region_ }}"
+    user_data: "{{ lookup('template', 'userdata.txt.j2') }}"
+    tags:
+      Name: "{{ item }}"
+      owner: "{{ owner }}"
+      environment: "{{ env }}"
+      operating_system: "Windows"
+      usage: "mbredemedemos"
+  loop: "{{ vm_names }}"
+  when: image_name is match("Win.*")
+  register: ec2_instance_facts_win
 
     - name: initialize target_hosts as an empty list/array
       set_fact:
