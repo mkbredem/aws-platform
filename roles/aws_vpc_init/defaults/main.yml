@@ -1,0 +1,14 @@
+---
+# defaults file for aws_vpc_init
+_image_id_: ami-08b207be5fdce406f
+_region_: us-east-1
+vpc_name: "mbredeme VPC"
+_vpc_cidr_block_: '12.0.0.0/16'
+igw_name: "mbredeme IGW"
+_subnet_cidr_: '12.0.1.0/24'
+subnet_name: "mbredeme Subnet"
+_route_table_name_: "mbredeme Route Table"
+destination_cidr_block: '0.0.0.0/0'
+_security_group_: "mbredemeSG"
+_key_name_: "mbredemekey"
+_instance_type_: "t2.micro"
