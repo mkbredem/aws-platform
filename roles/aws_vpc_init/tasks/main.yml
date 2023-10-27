@@ -63,31 +63,31 @@
         gateway_id: "{{ igw_result.gateway_id }}"
   register: public_route_table
 
-#- name: AWS Create EC2 Security Group for RHEL
-#  amazon.aws.ec2_security_group:
-#    name: "{{ _security_group_ }}_RHEL"
-#    description: "Security Group for Linux VM"
-#    vpc_id: "{{ ec2_vpc_net_result.vpc.id }}"
-#    region: "{{ _region_ }}"
-#    rules:
-#      - proto: tcp
-#        ports:
-#          - 22
-#        cidr_ip: 0.0.0.0/0
-#        rule_desc: allow all on port 22
-#      - proto: tcp
-#        ports:
-#          - 80
-#        cidr_ip: 0.0.0.0/0
-#        rule_desc: allow all on port 80
-#      - proto: tcp
-#        ports:
-#          - 443
-#        cidr_ip: 0.0.0.0/0
-#        rule_desc: allow all on port 443
-#    tags:
-#      Name: "{{ _security_group_ }}"
-#  when: image_name is match("rhel.*")
+- name: AWS Create EC2 Security Group for RHEL
+  amazon.aws.ec2_security_group:
+    name: "{{ _security_group_ }}_RHEL"
+    description: "Security Group for Linux VM"
+    vpc_id: "{{ ec2_vpc_net_result.vpc.id }}"
+    region: "{{ _region_ }}"
+    rules:
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: 0.0.0.0/0
+        rule_desc: allow all on port 22
+      - proto: tcp
+        ports:
+          - 80
+        cidr_ip: 0.0.0.0/0
+        rule_desc: allow all on port 80
+      - proto: tcp
+        ports:
+          - 443
+        cidr_ip: 0.0.0.0/0
+        rule_desc: allow all on port 443
+    tags:
+      Name: "{{ _security_group_ }}"
+  when: image_name is match("rhel.*")
 
 #- name: AWS Create EC2 Security Group for Windows
 #  amazon.aws.ec2_security_group:
