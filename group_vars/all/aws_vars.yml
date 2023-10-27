@@ -43,15 +43,16 @@ graphical_interface: false
   #   aws_region: us-east-1
 _image_id_: ami-08b207be5fdce406f
 _region_: us-east-1
-vpc_name: "{{ vpc_prefex}} VPC"
+vpc_name: "{{ vpc_prefix}} VPC"
 _vpc_cidr_block_: '12.0.0.0/16'
-igw_name: "{{ vpc_prefex}} IGW"
+igw_name: "{{ vpc_prefix}} IGW"
 _subnet_cidr_: '12.0.1.0/24'
-subnet_name: "{{ vpc_prefex}} Subnet"
-_route_table_name_: "{{ vpc_prefex}} Route Table"
+subnet_name: "{{ vpc_prefix}} Subnet"
+_route_table_name_: "{{ vpc_prefix}} Route Table"
 destination_cidr_block: '0.0.0.0/0'
-_security_group_: "{{ vpc_prefex}}SG"
-_key_name_: "{{ vpc_prefex}}key"
+_security_group_: "{{ vpc_prefix}}SG"
+_key_name_: "{{ vpc_prefix}}key"
 _instance_type_: "t2.micro"
 image_name: "rhel88"
 owner: mbredeme
+env: dev
