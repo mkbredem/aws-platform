@@ -64,7 +64,7 @@
   register: public_route_table
 
 - name: AWS Create EC2 Security Group for RHEL
-  ec2_security_group:
+  amazon.aws.ec2_security_group:
     name: "{{ _security_group_ }}_RHEL"
     description: "Security Group for Linux VM"
     vpc_id: "{{ ec2_vpc_net_result.vpc.id }}"
