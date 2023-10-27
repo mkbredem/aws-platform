@@ -131,47 +131,47 @@
       awsusername: "ec2-user"
   when: awsec2key.changed
 
-- name: Create EC2 instance with public IP for RHEL
-  amazon.aws.ec2_instance:
-    name: "{{ item }}"
-    key_name: "{{ _key_name_ }}"
-    vpc_subnet_id: "{{ vpcsubnet.subnet.id }}"
-    instance_type: "{{ _instance_type_ }}"
-    security_group: "{{ _security_group_ }}_RHEL"
-    state: running
-    wait: true
-    network:
-      assign_public_ip: true
-    image_id: "{{ _image_id_ }}"
-    region: "{{ _region_ }}"
-    tags:
-      Name: "{{ item }}"
-      owner: "{{ owner }}"
-      env: "{{ env }}"
-      operating_system: "RHEL"
-      usage: "mbredemedemos"
-  loop: "{{ vm_names }}"
-  when: operating_system is match("RHEL.*")
+#- name: Create EC2 instance with public IP for RHEL
+#  amazon.aws.ec2_instance:
+#    name: "{{ item }}"
+#    key_name: "{{ _key_name_ }}"
+#    vpc_subnet_id: "{{ vpcsubnet.subnet.id }}"
+#    instance_type: "{{ _instance_type_ }}"
+#    security_group: "{{ _security_group_ }}_RHEL"
+#    state: running
+#    wait: true
+#    network:
+#      assign_public_ip: true
+#    image_id: "{{ _image_id_ }}"
+#    region: "{{ _region_ }}"
+#    tags:
+#      Name: "{{ item }}"
+#      owner: "{{ owner }}"
+#      env: "{{ env }}"
+#      operating_system: "RHEL"
+#      usage: "mbredemedemos"
+#  loop: "{{ vm_names }}"
+#  when: operating_system is match("RHEL.*")
 
-- name: Create EC2 instance with public IP for Windows
-  amazon.aws.ec2_instance:
-    name: "{{ item }}"
-    key_name: "{{ _key_name_ }}"
-    vpc_subnet_id: "{{ vpcsubnet.subnet.id }}"
-    instance_type: "{{ _instance_type_ }}"
-    security_group: "{{ _security_group_ }}_Windows"
-    state: running
-    wait: true
-    network:
-      assign_public_ip: true
-    image_id: "{{ _image_id_ }}"
-    region: "{{ _region_ }}"
-    user_data: "{{ lookup('template', 'userdata.txt.j2') }}"
-    tags:
-      Name: "{{ item }}"
-      owner: "{{ owner }}"
-      environment: "{{ env }}"
-      operating_system: "Windows"
-      usage: "mbredemedemos"
-  loop: "{{ vm_names }}"
-  when: operating_system is match("Win.*")
+#- name: Create EC2 instance with public IP for Windows
+#  amazon.aws.ec2_instance:
+#    name: "{{ item }}"
+#    key_name: "{{ _key_name_ }}"
+#    vpc_subnet_id: "{{ vpcsubnet.subnet.id }}"
+#    instance_type: "{{ _instance_type_ }}"
+#    security_group: "{{ _security_group_ }}_Windows"
+#    state: running
+#    wait: true
+#    network:
+#      assign_public_ip: true
+#    image_id: "{{ _image_id_ }}"
+#    region: "{{ _region_ }}"
+#    user_data: "{{ lookup('template', 'userdata.txt.j2') }}"
+#    tags:
+#      Name: "{{ item }}"
+#      owner: "{{ owner }}"
+#      environment: "{{ env }}"
+#      operating_system: "Windows"
+#      usage: "mbredemedemos"
+#  loop: "{{ vm_names }}"
+#  when: operating_system is match("Win.*")
