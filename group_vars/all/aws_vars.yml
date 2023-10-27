@@ -54,3 +54,4 @@ _security_group_: "{{ vpc_prefex}}SG"
 _key_name_: "{{ vpc_prefex}}key"
 _instance_type_: "t2.micro"
 image_name: "rhel88"
+owner: mbredeme
