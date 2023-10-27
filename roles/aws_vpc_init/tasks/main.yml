@@ -87,7 +87,7 @@
         rule_desc: allow all on port 443
     tags:
       Name: "{{ _security_group_ }}"
-  when: operating_system is match("RHEL.*")
+  when: image_name is match("rhel.*")
 
 - name: AWS Create EC2 Security Group for Windows
   amazon.aws.ec2_security_group:
@@ -113,7 +113,7 @@
         rule_desc: allow all on port 443
     tags:
       Name: "{{ _security_group_ }}"
-  when: operating_system is match("Win.*")
+  when: image_name is match("Win.*")
 
 - name: Create EC2 Key
   amazon.aws.ec2_key:
