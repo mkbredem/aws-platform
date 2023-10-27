@@ -126,7 +126,7 @@
           operating_system: "RHEL"
           usage: "{{vpc_prefix}}demos"
       loop: "{{ vm_names }}"
-      when: image_name is match("RHEL.*")
+      when: image_name is match("rhel.*")
       register: ec2_instance_facts_rhel
     
     - name: Create EC2 instance with public IP for Windows
@@ -150,7 +150,7 @@
           operating_system: "Windows"
           usage: "mbredemedemos"
       loop: "{{ vm_names }}"
-      when: image_name is match("Win.*")
+      when: image_name is match("win.*")
       register: ec2_instance_facts_win
     
     - name: initialize target_hosts as an empty list/array
