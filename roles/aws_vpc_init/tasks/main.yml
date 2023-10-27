@@ -122,7 +122,7 @@
   register: awsec2key
 
 - name: Update SSH key in controller    # noqa: no-handler
-  ansible.controller.credential:
+  infra.controller_configuration.credential:
     name: "AWS {{ _key_name_ }}"
     state: present
     credential_type: "AWS Key"
