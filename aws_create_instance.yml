@@ -6,7 +6,6 @@
   roles:
     - name: aws_vpc_init
 
-  tasks:
 ############## Series of checks to determine         ##################
 ############## which flavor of OS was selected       ##################
 ############## so the propper provisioning           ##################
@@ -90,89 +89,92 @@
 ###########                                 #############
 ###########                                 #############
 
-#- name: Change image ID if running Windows
-#  ansible.builtin.set_fact:
-#    _image_id_: 'ami-04b707657b5bf6b20'
-#  when: image_name is match("win*")
-#
-#- name: Change image ID if running RHEL8
-#  ansible.builtin.set_fact:
-#    _image_id_: 'ami-046981daef262e1d8'
-#  when: image_name == "rhel88"
-#
-#- name: Change image ID if running RHEL9
-#  ansible.builtin.set_fact:
-#    _image_id_: 'ami-093e0758ef99ec8a4'
-#  when: image_name == "rhel92"
-
-- name: Create EC2 instance with public IP for RHEL
-  amazon.aws.ec2_instance:
-    name: "{{ item }}"
-    key_name: "{{ _key_name_ }}"
-    vpc_subnet_id: "{{ vpcsubnet.subnet.id }}"
-    instance_type: "{{ _instance_type_ }}"
-    security_group: "{{ _security_group_ }}_RHEL"
-    state: running
-    wait: true
-    network:
-      assign_public_ip: true
-    image_id: "{{ ami_id[_region_][image_name] }}"
-    region: "{{ _region_ }}"
-    tags:
-      Name: "{{ item }}"
-      owner: "{{ owner }}"
-      env: "{{ env }}"
-      operating_system: "RHEL"
-      usage: "{{vpc_prefix}}demos"
-  loop: "{{ vm_names }}"
-  when: image_name is match("RHEL.*")
-  register: ec2_instance_facts_rhel
-
-- name: Create EC2 instance with public IP for Windows
-  amazon.aws.ec2_instance:
-    name: "{{ item }}"
-    key_name: "{{ _key_name_ }}"
-    vpc_subnet_id: "{{ vpcsubnet.subnet.id }}"
-    instance_type: "{{ _instance_type_ }}"
-    security_group: "{{ _security_group_ }}_Windows"
-    state: running
-    wait: true
-    network:
-      assign_public_ip: true
-    image_id: "{{ _image_id_ }}"
-    region: "{{ _region_ }}"
-    user_data: "{{ lookup('template', 'userdata.txt.j2') }}"
-    tags:
-      Name: "{{ item }}"
-      owner: "{{ owner }}"
-      environment: "{{ env }}"
-      operating_system: "Windows"
-      usage: "mbredemedemos"
-  loop: "{{ vm_names }}"
-  when: image_name is match("Win.*")
-  register: ec2_instance_facts_win
-
-- name: initialize target_hosts as an empty list/array
-  set_fact:
-    target_hosts: []
-
-- name: load Windows instances into target_hosts list (used in future plays for config)
-  when: image_name == "windows2019" 
-  set_stats:
-    data: 
-      target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
-  loop: "{{ ec2_instance_facts_win.instances }}"
-
-- name: load RHEL instances into target_hosts list (used in future plays for config)
-  when: image_name is match("rhel*")
-  set_stats:
-    data: 
-      target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
-  loop: "{{ ec2_instance_facts_rhel.instances }}"
-
-- name: give instance time to initialize before configuration
-  ansible.builtin.wait_for: 
-    timeout: 150
-
-
-
+  tasks:
+    - name: Change image ID if running Windows
+      ansible.builtin.set_fact:
+        _image_id_: 'ami-04b707657b5bf6b20'
+      when: image_name is match("win*")
+    
+    - name: Change image ID if running RHEL8
+      ansible.builtin.set_fact:
+        _image_id_: 'ami-046981daef262e1d8'
+      when: image_name == "rhel88"
+    
+    - name: Change image ID if running RHEL9
+      ansible.builtin.set_fact:
+        _image_id_: 'ami-093e0758ef99ec8a4'
+      when: image_name == "rhel92"
+  
+  
+    - name: Create EC2 instance with public IP for RHEL
+      amazon.aws.ec2_instance:
+        name: "{{ item }}"
+        key_name: "{{ _key_name_ }}"
+        vpc_subnet_id: "{{ vpcsubnet.subnet.id }}"
+        instance_type: "{{ _instance_type_ }}"
+        security_group: "{{ _security_group_ }}_RHEL"
+        state: running
+        wait: true
+        network:
+          assign_public_ip: true
+        image_id: "{{ ami_id[_region_][image_name] }}"
+        region: "{{ _region_ }}"
+        tags:
+          Name: "{{ item }}"
+          owner: "{{ owner }}"
+          env: "{{ env }}"
+          operating_system: "RHEL"
+          usage: "{{vpc_prefix}}demos"
+      loop: "{{ vm_names }}"
+      when: image_name is match("RHEL.*")
+      register: ec2_instance_facts_rhel
+    
+    - name: Create EC2 instance with public IP for Windows
+      amazon.aws.ec2_instance:
+        name: "{{ item }}"
+        key_name: "{{ _key_name_ }}"
+        vpc_subnet_id: "{{ vpcsubnet.subnet.id }}"
+        instance_type: "{{ _instance_type_ }}"
+        security_group: "{{ _security_group_ }}_Windows"
+        state: running
+        wait: true
+        network:
+          assign_public_ip: true
+        image_id: "{{ _image_id_ }}"
+        region: "{{ _region_ }}"
+        user_data: "{{ lookup('template', 'userdata.txt.j2') }}"
+        tags:
+          Name: "{{ item }}"
+          owner: "{{ owner }}"
+          environment: "{{ env }}"
+          operating_system: "Windows"
+          usage: "mbredemedemos"
+      loop: "{{ vm_names }}"
+      when: image_name is match("Win.*")
+      register: ec2_instance_facts_win
+    
+    - name: initialize target_hosts as an empty list/array
+      set_fact:
+        target_hosts: []
+    
+    - name: load Windows instances into target_hosts list (used in future plays for config)
+      when: image_name == "windows2019" 
+      set_stats:
+        data: 
+          target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
+      loop: "{{ ec2_instance_facts_win.instances }}"
+    
+    - name: load RHEL instances into target_hosts list (used in future plays for config)
+      when: image_name is match("rhel*")
+      set_stats:
+        data: 
+          target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
+      loop: "{{ ec2_instance_facts_rhel.instances }}"
+    
+    - name: give instance time to initialize before configuration
+      ansible.builtin.wait_for: 
+        timeout: 150
+    
+    
+    
+    
