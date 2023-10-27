@@ -90,20 +90,20 @@
 ###########                                 #############
 ###########                                 #############
 
-- name: Change image ID if running Windows
-  ansible.builtin.set_fact:
-    _image_id_: 'ami-04b707657b5bf6b20'
-  when: image_name is match("win*")
-
-- name: Change image ID if running RHEL8
-  ansible.builtin.set_fact:
-    _image_id_: 'ami-046981daef262e1d8'
-  when: image_name == "RHEL8"
-
-- name: Change image ID if running RHEL9
-  ansible.builtin.set_fact:
-    _image_id_: 'ami-093e0758ef99ec8a4'
-  when: image_name == "RHEL9"
+#- name: Change image ID if running Windows
+#  ansible.builtin.set_fact:
+#    _image_id_: 'ami-04b707657b5bf6b20'
+#  when: image_name is match("win*")
+#
+#- name: Change image ID if running RHEL8
+#  ansible.builtin.set_fact:
+#    _image_id_: 'ami-046981daef262e1d8'
+#  when: image_name == "rhel88"
+#
+#- name: Change image ID if running RHEL9
+#  ansible.builtin.set_fact:
+#    _image_id_: 'ami-093e0758ef99ec8a4'
+#  when: image_name == "rhel92"
 
 - name: Create EC2 instance with public IP for RHEL
   amazon.aws.ec2_instance:
@@ -116,14 +116,14 @@
     wait: true
     network:
       assign_public_ip: true
-    image_id: "{{ _image_id_ }}"
+    image_id: "{{ ami_id[_region_][image_name] }}"
     region: "{{ _region_ }}"
     tags:
       Name: "{{ item }}"
       owner: "{{ owner }}"
       env: "{{ env }}"
       operating_system: "RHEL"
-      usage: "mbredemedemos"
+      usage: "{{vpc_prefix}}demos"
   loop: "{{ vm_names }}"
   when: image_name is match("RHEL.*")
   register: ec2_instance_facts_rhel
