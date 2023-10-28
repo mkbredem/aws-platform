@@ -119,7 +119,7 @@
   ansible.controller.credential_type:
     name: AWS Key
     state: present
-    kind: ssh
+    kind: cloud
     inputs:
       fields:
         - id: awsusername
