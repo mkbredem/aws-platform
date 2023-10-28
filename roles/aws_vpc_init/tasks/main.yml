@@ -147,6 +147,7 @@
     name: "AWS {{ _key_name_ }}"
     state: present
     credential_type: "AWS Key"
+    organization: Default
     inputs:
       aws_ssh_key: "{{ awsec2key.key.private_key }}"
       awsusername: "ec2-user"
