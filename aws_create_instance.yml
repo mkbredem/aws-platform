@@ -128,6 +128,10 @@
       loop: "{{ vm_names }}"
       when: image_name is match("rhel.*")
       register: ec2_instance_facts_rhel
+
+    - name: ec2_instance_facts_rhel values
+      debug:
+        var: ec2_instances_facts_rhel
     
     - name: Create EC2 instance with public IP for Windows
       amazon.aws.ec2_instance:
