@@ -174,7 +174,7 @@
       set_stats:
         data: 
           target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
-      loop: "{{ ec2_instance_facts_rhel.instances }}"
+      loop: "{{ ec2_instance_facts_rhel.results.instances }}"
     
     - name: give instance time to initialize before configuration
       ansible.builtin.wait_for: 
