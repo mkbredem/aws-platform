@@ -131,7 +131,7 @@
 
     - name: ec2_instance_facts_rhel values
       debug:
-        var: ec2_instances_facts_rhel
+        var: ec2_instance_facts_rhel
     
     - name: Create EC2 instance with public IP for Windows
       amazon.aws.ec2_instance:
