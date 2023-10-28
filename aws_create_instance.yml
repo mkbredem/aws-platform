@@ -154,8 +154,9 @@
       register: ec2_instance_facts_win
     
     - name: initialize target_hosts as an empty list/array
-      set_fact:
-        target_hosts: []
+      set_stats:
+        data:
+          target_hosts: []
     
     - name: load Windows instances into target_hosts list (used in future plays for config)
       when: image_name == "windows2019" 
