@@ -148,8 +148,8 @@
     credential_type: "Machine"
     organization: Default
     inputs:
-      aws_ssh_key: "{{ awsec2key.key.private_key }}"
-      awsusername: "ec2-user"
+      ssh_private_key: "{{ awsec2key.key.private_key }}"
+      username: "ec2-user"
   when: awsec2key.changed
 
 #- name: Create EC2 instance with public IP for RHEL
