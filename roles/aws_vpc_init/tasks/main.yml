@@ -135,7 +135,6 @@
         - awsusername
         - aws_ssh_key
 
-
 - name: Create EC2 Key
   amazon.aws.ec2_key:
     name: "{{ _key_name_ }}"
@@ -146,7 +145,7 @@
   ansible.controller.credential:
     name: "AWS {{ _key_name_ }}"
     state: present
-    credential_type: "AWS Key"
+    credential_type: "Machine"
     organization: Default
     inputs:
       aws_ssh_key: "{{ awsec2key.key.private_key }}"
