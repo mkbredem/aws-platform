@@ -21,19 +21,19 @@ peers=execution_nodes
 [sso]
 
 [all:vars]
-admin_password='{{ aap_admin | default("") }}'
+admin_password='{{ aap_admin }}'
 
 pg_host=''
 pg_port=5432
 
 pg_database='awx'
 pg_username='awx'
-pg_password='{{aap_admin}}'
+pg_password='{{ aap_admin }}'
 pg_sslmode='prefer'  # set to 'verify-full' for client-side enforced SSL
 
 registry_url='registry.redhat.io'
-registry_username='{{PORTAL_USERNAME}}'
-registry_password='{{PORTAL_PASSWORD:}}'
+registry_username='{{ PORTAL_USERNAME }}'
+registry_password='{{ PORTAL_PASSWORD }}'
 
 receptor_listener_port=27199
 
