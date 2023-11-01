@@ -104,18 +104,6 @@
       ansible.builtin.set_fact:
         _image_id_: 'ami-093e0758ef99ec8a4'
       when: image_name == "rhel92"
-  
-    - name: Create an Elastic IP address
-      amazon.aws.ec2_vpc_eip:
-        region: "{{ _region_ }}"
-      loop: '{{ vm_names }}'
-      register: eips
-      when: env_tag == prod
-
-    - name: show eip structure
-      debug:  
-         vars: eips
-      when: env_tag == prod
 
     - name: Create EC2 instance with public IP for RHEL
       amazon.aws.ec2_instance:
@@ -139,6 +127,12 @@
       loop: "{{ vm_names }}"
       when: image_name is match("rhel.*")
       register: ec2_instance_facts_rhel
+
+    - name: allocate eip when prod
+      amazon.aws.ec2_eip:
+        device_id: "{{ item }}"
+      loop: "{{ec2_instance_facts.instance_ids}}"
+      when: env_tag == prod
 
     - name: ec2_instance_facts_rhel values
       debug:
