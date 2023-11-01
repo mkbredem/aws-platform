@@ -53,10 +53,10 @@
         dest: /root/install_aap_{{aap_version}}/
 
     - name: Run setup.sh script
-      ansible.builtin.shell: setup.sh >> installlog.txt
+      ansible.builtin.shell: ./setup.sh
       args:
         chdir: /root/install_aap_{{aap_version}}/
-        creates: installlog.txt   
+ 
 
 #    - name: show results
 #      debug:
