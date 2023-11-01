@@ -34,14 +34,18 @@
         path: /root/install_aap_{{aap_version}}
         state: directory
 
-    - name: Extract installation tar.gz file
-      ansible.builtin.unarchive:
-        src: "{{tar.dest}}"
-        dest: /root
-        creates: install_aap_{{aap_version}}/
-        remote_src: yes
-        list_files: True
+    - name: extract installation tar file
+      command: tar -xzf {{tar.dest}} --strip-components=1 -C /root/install_aap_{{aap_version}}/
       register: extraction_result
+      
+#    - name: Extract installation tar.gz file
+#      ansible.builtin.unarchive:
+#        src: "{{tar.dest}}"
+#        dest: /root
+#        creates: install_aap_{{aap_version}}/
+#        remote_src: yes
+#        list_files: True
+#      register: extraction_result
 
     - name: directory without tar.gz
       debug:
