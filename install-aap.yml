@@ -1,0 +1,13 @@
+---
+- name: install aap from backup
+  hosts: _aap_demo_controller
+  vars: 
+    backup_url: 'https://www.dropbox.com/scl/fi/x2ai7dzbtkclowvjoqt6x/ac_backup2023-10-25_version_2.4-1.tar.gz?rlkey=ao33mgq52aaszo6gqtk5wj39r&dl=0'
+
+  tasks:
+    - name: download backup file
+      get_url:
+        url: "{{backup_url}}"
+        dest: "/root"
+
+    - name: 
