@@ -194,7 +194,7 @@
 
         - name: target hosts for prod
           debug:
-            var: item.item.item.instances[0].public_dns_name 
+            msg: "{{ item.item.item.instances[0].public_dns_name }}"
           loop: "{{ run_eips.results }}"
 
       when: env_tag == "prod" 
