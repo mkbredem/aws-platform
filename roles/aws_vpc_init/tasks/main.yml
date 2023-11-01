@@ -30,6 +30,11 @@
       Name: "{{ vpc_name }}"
   register: ec2_vpc_net_result
 
+- name: create a public zone
+  amazon.aws.route53_zone:
+    zone: "{{ vpc_prefix}}.com"
+    comment: domain for {{ vpc_name }}
+
 - name: Create Internet Gateway for VPC
   amazon.aws.ec2_vpc_igw:
     vpc_id: "{{ ec2_vpc_net_result.vpc.id }}"

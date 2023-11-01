@@ -105,7 +105,16 @@
         _image_id_: 'ami-093e0758ef99ec8a4'
       when: image_name == "rhel92"
   
-  
+    - name: Create an Elastic IP address
+      ec2_vpc_eip:
+        region: "{{ _region_ }}"
+      loop: '{{ vm_names }}'
+      register: eips
+
+    - name: show eip structure
+        debug:  
+          vars: eips
+
     - name: Create EC2 instance with public IP for RHEL
       amazon.aws.ec2_instance:
         name: "{{ item }}"
