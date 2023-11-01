@@ -142,7 +142,7 @@
 
     - name: show eip instance structures
       debug:
-        vars: eips
+        var: eips
 
     - name: Create EC2 instance with public IP for Windows
       amazon.aws.ec2_instance:
