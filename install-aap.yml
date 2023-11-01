@@ -19,6 +19,7 @@
       ansible.builtin.unarchive:
         src: "{{tar.dest}}"
         dest: /root    # Replace with the destination folder
+        remote_src: yes
       register: extraction_result
 
     - name: show results
