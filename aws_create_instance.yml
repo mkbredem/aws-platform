@@ -185,12 +185,12 @@
           debug:
             var: run_eips
         
-        - name: load RHEL instances into target_hosts list (used in future plays for config)
+        - name: load production RHEL instances into target_hosts list (used in future plays for config)
           when: image_name is match("rhel*")
           set_stats:
             data: 
-              target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
-          loop: "{{ run_eips.results[0].item.item.instances[0].public_dns_name }}"
+              target_hosts: "{{ target_hosts + [ item.item.instances[0].public_dns_name ] }}"
+          loop: "{{ run_eips.results[0] }}"
 
         - name: target hosts for prod
           debug:
@@ -207,7 +207,7 @@
               target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
           loop: "{{ ec2_instance_facts_win.results[0].instances }}"
         
-        - name: load RHEL instances into target_hosts list (used in future plays for config)
+        - name: load non-production RHEL instances into target_hosts list (used in future plays for config)
           when: image_name is match("rhel*")
           set_stats:
             data: 
