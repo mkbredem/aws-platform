@@ -1,5 +1,5 @@
 [automationcontroller]
-{{ inventoy_hostname }} ansible_connection=local
+{{ inventory_hostname }} ansible_connection=local
 
 [automationcontroller:vars]
 peers=execution_nodes
@@ -7,17 +7,21 @@ peers=execution_nodes
 [execution_nodes]
 
 [automationhub]
-{{groups['_aap_demo_automation_hub'][0] | default(omit)}}
+{% if '_aap_demo_automation_hub' in groups %}
+{{ groups['_aap_demo_automation_hub'][0] }}
+{% endif %}
 
 [automationedacontroller]
-{{groups['_aap_demo_eda_controller'][0] | default(omit)}}
+{% if '_aap_demo_eda_controller' in groups %}
+{{ groups['_aap_demo_eda_controller'][0] }}
+{% endif %}
 
 [database]
 
 [sso]
 
 [all:vars]
-admin_password='{{aap_admin}}'
+admin_password='{{ aap_admin | default("") }}'
 
 pg_host=''
 pg_port=5432
