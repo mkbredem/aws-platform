@@ -5,3 +5,6 @@ plat_windows:
   ansible_connection: winrm
   # The following is necessary for Python 2.7.9+ when using default WinRM self-signed certificates:
   ansible_winrm_server_cert_validation: ignore
+app_tag: utility
+env_tag: dev
+name_tag: aap_demo
