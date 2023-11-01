@@ -37,7 +37,8 @@
     - name: Extract installation tar.gz file
       ansible.builtin.unarchive:
         src: "{{tar.dest}}"
-        dest: /root/install_aap_{{aap_version}}/
+        dest: /root
+        creates: install_aap_{{aap_version}}/
         remote_src: yes
         list_files: True
       register: extraction_result
