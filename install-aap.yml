@@ -37,7 +37,7 @@
     - name: extract installation tar file
       command: tar -xzf {{tar.dest}} --strip-components=1 -C /root/install_aap_{{aap_version}}/
       register: extraction_result
-      
+
 #    - name: Extract installation tar.gz file
 #      ansible.builtin.unarchive:
 #        src: "{{tar.dest}}"
@@ -46,10 +46,6 @@
 #        remote_src: yes
 #        list_files: True
 #      register: extraction_result
-
-    - name: directory without tar.gz
-      debug:
-        msg: "{{extraction_result.dest | regex_replace('\\.tar\\.gz$', '') }}"
 
     - name: Add templages file to installation directory
       template:
