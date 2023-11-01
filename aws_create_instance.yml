@@ -189,7 +189,7 @@
           when: image_name is match("rhel*")
           set_stats:
             data: 
-              target_hosts: "{{ target_hosts + [ item.item.instances[0].public_dns_name ] }}"
+              target_hosts: "{{ target_hosts + [ item.item.item.instances[0].public_dns_name ] }}"
           loop: "{{ run_eips.results }}"
 
         - name: target hosts for prod
