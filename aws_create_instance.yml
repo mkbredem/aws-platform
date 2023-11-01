@@ -132,30 +132,6 @@
       debug:
         var: ec2_instance_facts_rhel
 
-    - name: allocate eip when prod
-      amazon.aws.ec2_eip:
-        region: "{{ _region_ }}"
-        device_id: "{{ item.instances[0].instance_id }}"
-      loop: "{{ec2_instance_facts_rhel.results}}"
-      when: env_tag == "prod"
-      register: eips    
-
-    - name: show eip instance structures
-      debug:
-        var: eips
-
-    - name: get eipinfo
-      amazon.aws.ec2_eip_info:
-        region: "{{ _region_ }}"
-        filters:
-          allocation-id: "{{ item.allocation_id }}"
-      loop: "{{ eips.results }}"
-      register: run_eips
-
-    - name: show this runs eips
-      debug:
-        var: run_eips
-
     - name: Create EC2 instance with public IP for Windows
       amazon.aws.ec2_instance:
         name: "{{ item }}"
@@ -179,7 +155,53 @@
       loop: "{{ vm_names }}"
       when: image_name is match("win.*")
       register: ec2_instance_facts_win
+
+    - name: initialize target_hosts as an empty list/array
+      set_fact:
+        target_hosts: []
     
+    - name: allocate elastic IPs for production
+      block:
+        - name: allocate eip for prod servers
+          amazon.aws.ec2_eip:
+            region: "{{ _region_ }}"
+            device_id: "{{ item.instances[0].instance_id }}"
+          loop: "{{ec2_instance_facts_rhel.results}}"
+          register: eips    
+    
+        - name: show eip instance structures
+          debug:
+            var: eips
+    
+        - name: get eipinfo
+          amazon.aws.ec2_eip_info:
+            region: "{{ _region_ }}"
+            filters:
+              allocation-id: "{{ item.allocation_id }}"
+          loop: "{{ eips.results }}"
+          register: run_eips
+    
+        - name: show this runs eips
+          debug:
+            var: run_eips
+        
+        - name: load RHEL instances into target_hosts list (used in future plays for config)
+          when: image_name is match("rhel*")
+          set_stats:
+            data: 
+              target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
+          loop: "{{ run_eips.results[0].item.item.instances[0].public_dns_name }}"
+
+        - name:
+          debug:
+            var: target_hosts
+
+        when: env_tag == "prod"
+
+    - name: allocate elastic IPs for production
+      block:
+        when: env_tag != "prod"      
+
     - name: initialize target_hosts as an empty list/array
       set_fact:
         target_hosts: []
