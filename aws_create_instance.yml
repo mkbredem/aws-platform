@@ -136,7 +136,7 @@
       amazon.aws.ec2_eip:
         device_id: "{{ item.instances.instance_id }}"
       loop: "{{ec2_instance_facts_rhel.results}}"
-      when: env_tag == prod
+      when: env_tag == "prod"
       register: eips    
 
     - name: show eip instance structures
