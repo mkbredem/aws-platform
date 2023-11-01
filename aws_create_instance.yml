@@ -143,6 +143,16 @@
     - name: show eip instance structures
       debug:
         var: eips
+    - name: get eipinfo
+      amazon.aws.ec2_eip_info:
+        filters:
+          allocation_id: "{{ item.allocation_id }}"
+      loop: "{{ eips.results }}"
+      register: run_eips
+
+    - name: show this runs eips
+      debug:
+        var: run_eips
 
     - name: Create EC2 instance with public IP for Windows
       amazon.aws.ec2_instance:
