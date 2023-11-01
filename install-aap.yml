@@ -37,7 +37,7 @@
       register: extraction_result
 
     - name: Add templages file to installation directory
-      templates:
+      template:
         src: inventory{{aap_version}}.j2
         dest: "{{extraction_result.dest | basename }}"
   
