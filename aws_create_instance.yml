@@ -110,6 +110,7 @@
         region: "{{ _region_ }}"
       loop: '{{ vm_names }}'
       register: eips
+      when: env_tag == prod
 
     - name: show eip structure
         debug:  
