@@ -34,6 +34,7 @@
         src: "{{tar.dest}}"
         dest: /root  
         remote_src: yes
+        list_files: True
       register: extraction_result
 
     - name: directory without tar.gz
