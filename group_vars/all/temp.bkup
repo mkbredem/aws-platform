@@ -1,0 +1,570 @@
+{
+  "ec2_instance_facts_rhel": {
+    "results": [
+      {
+        "changed": true,
+        "instance_ids": [
+          "i-0181011d74adfcebc"
+        ],
+        "instances": [
+          {
+            "ami_launch_index": 0,
+            "image_id": "ami-046981daef262e1d8",
+            "instance_id": "i-0181011d74adfcebc",
+            "instance_type": "m5.xlarge",
+            "key_name": "mbredemekey",
+            "launch_time": "2023-11-01T13:47:45+00:00",
+            "monitoring": {
+              "state": "disabled"
+            },
+            "placement": {
+              "availability_zone": "us-east-1c",
+              "group_name": "",
+              "tenancy": "default"
+            },
+            "private_dns_name": "ip-12-0-1-80.ec2.internal",
+            "private_ip_address": "12.0.1.80",
+            "product_codes": [],
+            "public_dns_name": "ec2-18-206-46-92.compute-1.amazonaws.com",
+            "public_ip_address": "18.206.46.92",
+            "state": {
+              "code": 16,
+              "name": "running"
+            },
+            "state_transition_reason": "",
+            "subnet_id": "subnet-08b641931e3cf427f",
+            "vpc_id": "vpc-0e75651dee3db7ec7",
+            "architecture": "x86_64",
+            "block_device_mappings": [
+              {
+                "device_name": "/dev/sda1",
+                "ebs": {
+                  "attach_time": "2023-11-01T13:47:45+00:00",
+                  "delete_on_termination": true,
+                  "status": "attached",
+                  "volume_id": "vol-086302072796ec8b9"
+                }
+              }
+            ],
+            "client_token": "c901e1f2a3394286bf53c67053189fad",
+            "ebs_optimized": false,
+            "ena_support": true,
+            "hypervisor": "xen",
+            "network_interfaces": [
+              {
+                "association": {
+                  "ip_owner_id": "amazon",
+                  "public_dns_name": "ec2-18-206-46-92.compute-1.amazonaws.com",
+                  "public_ip": "18.206.46.92"
+                },
+                "attachment": {
+                  "attach_time": "2023-11-01T13:47:45+00:00",
+                  "attachment_id": "eni-attach-0a2fc715bab09e6f2",
+                  "delete_on_termination": true,
+                  "device_index": 0,
+                  "status": "attached",
+                  "network_card_index": 0
+                },
+                "description": "",
+                "groups": [
+                  {
+                    "group_name": "mbredemeSG_RHEL",
+                    "group_id": "sg-08582304bb057ef26"
+                  }
+                ],
+                "ipv6_addresses": [],
+                "mac_address": "02:d4:98:e0:e9:4d",
+                "network_interface_id": "eni-0338b2cd1076a7f77",
+                "owner_id": "399676474600",
+                "private_dns_name": "ip-12-0-1-80.ec2.internal",
+                "private_ip_address": "12.0.1.80",
+                "private_ip_addresses": [
+                  {
+                    "association": {
+                      "ip_owner_id": "amazon",
+                      "public_dns_name": "ec2-18-206-46-92.compute-1.amazonaws.com",
+                      "public_ip": "18.206.46.92"
+                    },
+                    "primary": true,
+                    "private_dns_name": "ip-12-0-1-80.ec2.internal",
+                    "private_ip_address": "12.0.1.80"
+                  }
+                ],
+                "source_dest_check": true,
+                "status": "in-use",
+                "subnet_id": "subnet-08b641931e3cf427f",
+                "vpc_id": "vpc-0e75651dee3db7ec7",
+                "interface_type": "interface"
+              }
+            ],
+            "root_device_name": "/dev/sda1",
+            "root_device_type": "ebs",
+            "security_groups": [
+              {
+                "group_name": "mbredemeSG_RHEL",
+                "group_id": "sg-08582304bb057ef26"
+              }
+            ],
+            "source_dest_check": true,
+            "tags": {
+              "owner": "mbredeme",
+              "usage": "mbredemedemos",
+              "operating_system": "RHEL",
+              "Name": "aap_demo_test1",
+              "env": "prod"
+            },
+            "virtualization_type": "hvm",
+            "cpu_options": {
+              "core_count": 2,
+              "threads_per_core": 2
+            },
+            "capacity_reservation_specification": {
+              "capacity_reservation_preference": "open"
+            },
+            "hibernation_options": {
+              "configured": false
+            },
+            "metadata_options": {
+              "state": "applied",
+              "http_tokens": "optional",
+              "http_put_response_hop_limit": 1,
+              "http_endpoint": "enabled",
+              "http_protocol_ipv6": "disabled",
+              "instance_metadata_tags": "disabled"
+            },
+            "enclave_options": {
+              "enabled": false
+            },
+            "platform_details": "Red Hat BYOL Linux",
+            "usage_operation": "RunInstances:00g0",
+            "usage_operation_update_time": "2023-11-01T13:47:45+00:00",
+            "private_dns_name_options": {
+              "hostname_type": "ip-name",
+              "enable_resource_name_dns_a_record": false,
+              "enable_resource_name_dns_aaaa_record": false
+            },
+            "maintenance_options": {
+              "auto_recovery": "default"
+            },
+            "current_instance_boot_mode": "legacy-bios"
+          }
+        ],
+        "spec": {
+          "ClientToken": "c901e1f2a3394286bf53c67053189fad",
+          "MaxCount": 1,
+          "MinCount": 1,
+          "ImageId": "ami-046981daef262e1d8",
+          "KeyName": "mbredemekey",
+          "NetworkInterfaces": [
+            {
+              "DeviceIndex": 0,
+              "AssociatePublicIpAddress": true,
+              "SubnetId": "subnet-08b641931e3cf427f",
+              "Groups": [
+                "sg-08582304bb057ef26"
+              ]
+            }
+          ],
+          "BlockDeviceMappings": [],
+          "TagSpecifications": [
+            {
+              "ResourceType": "volume",
+              "Tags": [
+                {
+                  "Key": "Name",
+                  "Value": "aap_demo_test1"
+                },
+                {
+                  "Key": "owner",
+                  "Value": "mbredeme"
+                },
+                {
+                  "Key": "env",
+                  "Value": "prod"
+                },
+                {
+                  "Key": "operating_system",
+                  "Value": "RHEL"
+                },
+                {
+                  "Key": "usage",
+                  "Value": "mbredemedemos"
+                }
+              ]
+            },
+            {
+              "ResourceType": "instance",
+              "Tags": [
+                {
+                  "Key": "Name",
+                  "Value": "aap_demo_test1"
+                },
+                {
+                  "Key": "owner",
+                  "Value": "mbredeme"
+                },
+                {
+                  "Key": "env",
+                  "Value": "prod"
+                },
+                {
+                  "Key": "operating_system",
+                  "Value": "RHEL"
+                },
+                {
+                  "Key": "usage",
+                  "Value": "mbredemedemos"
+                }
+              ]
+            }
+          ],
+          "InstanceType": "m5.xlarge"
+        },
+        "invocation": {
+          "module_args": {
+            "name": "aap_demo_test1",
+            "key_name": "mbredemekey",
+            "vpc_subnet_id": "subnet-08b641931e3cf427f",
+            "instance_type": "m5.xlarge",
+            "security_group": "mbredemeSG_RHEL",
+            "state": "running",
+            "wait": true,
+            "network": {
+              "assign_public_ip": true
+            },
+            "image_id": "ami-046981daef262e1d8",
+            "region": "us-east-1",
+            "tags": {
+              "Name": "aap_demo_test1",
+              "owner": "mbredeme",
+              "env": "prod",
+              "operating_system": "RHEL",
+              "usage": "mbredemedemos"
+            },
+            "access_key": "AKIAV2DUTATUCNMZI3OE",
+            "secret_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+            "validate_certs": true,
+            "debug_botocore_endpoint_logs": false,
+            "wait_timeout": 600,
+            "security_groups": [],
+            "purge_tags": true,
+            "hibernation_options": false,
+            "instance_ids": [],
+            "session_token": null,
+            "profile": null,
+            "endpoint_url": null,
+            "aws_ca_bundle": null,
+            "aws_config": null,
+            "count": null,
+            "exact_count": null,
+            "image": null,
+            "user_data": null,
+            "aap_callback": null,
+            "ebs_optimized": null,
+            "availability_zone": null,
+            "iam_instance_profile": null,
+            "filters": null,
+            "launch_template": null,
+            "cpu_credit_specification": null,
+            "cpu_options": null,
+            "tenancy": null,
+            "placement_group": null,
+            "instance_initiated_shutdown_behavior": null,
+            "termination_protection": null,
+            "detailed_monitoring": null,
+            "volumes": null,
+            "metadata_options": null
+          }
+        },
+        "failed": false,
+        "item": "aap_demo_test1",
+        "ansible_loop_var": "item"
+      },
+      {
+        "changed": true,
+        "instance_ids": [
+          "i-0dc83f1f46fb14b1c"
+        ],
+        "instances": [
+          {
+            "ami_launch_index": 0,
+            "image_id": "ami-046981daef262e1d8",
+            "instance_id": "i-0dc83f1f46fb14b1c",
+            "instance_type": "m5.xlarge",
+            "key_name": "mbredemekey",
+            "launch_time": "2023-11-01T13:48:03+00:00",
+            "monitoring": {
+              "state": "disabled"
+            },
+            "placement": {
+              "availability_zone": "us-east-1c",
+              "group_name": "",
+              "tenancy": "default"
+            },
+            "private_dns_name": "ip-12-0-1-137.ec2.internal",
+            "private_ip_address": "12.0.1.137",
+            "product_codes": [],
+            "public_dns_name": "ec2-44-195-46-219.compute-1.amazonaws.com",
+            "public_ip_address": "44.195.46.219",
+            "state": {
+              "code": 16,
+              "name": "running"
+            },
+            "state_transition_reason": "",
+            "subnet_id": "subnet-08b641931e3cf427f",
+            "vpc_id": "vpc-0e75651dee3db7ec7",
+            "architecture": "x86_64",
+            "block_device_mappings": [
+              {
+                "device_name": "/dev/sda1",
+                "ebs": {
+                  "attach_time": "2023-11-01T13:48:04+00:00",
+                  "delete_on_termination": true,
+                  "status": "attached",
+                  "volume_id": "vol-01902da14dc60ef5c"
+                }
+              }
+            ],
+            "client_token": "0359aed46bbb4267ad823f9748f68079",
+            "ebs_optimized": false,
+            "ena_support": true,
+            "hypervisor": "xen",
+            "network_interfaces": [
+              {
+                "association": {
+                  "ip_owner_id": "amazon",
+                  "public_dns_name": "ec2-44-195-46-219.compute-1.amazonaws.com",
+                  "public_ip": "44.195.46.219"
+                },
+                "attachment": {
+                  "attach_time": "2023-11-01T13:48:03+00:00",
+                  "attachment_id": "eni-attach-02f162a87afc2408f",
+                  "delete_on_termination": true,
+                  "device_index": 0,
+                  "status": "attached",
+                  "network_card_index": 0
+                },
+                "description": "",
+                "groups": [
+                  {
+                    "group_name": "mbredemeSG_RHEL",
+                    "group_id": "sg-08582304bb057ef26"
+                  }
+                ],
+                "ipv6_addresses": [],
+                "mac_address": "02:c5:d5:58:b1:fd",
+                "network_interface_id": "eni-00bc4e70fb2cdd395",
+                "owner_id": "399676474600",
+                "private_dns_name": "ip-12-0-1-137.ec2.internal",
+                "private_ip_address": "12.0.1.137",
+                "private_ip_addresses": [
+                  {
+                    "association": {
+                      "ip_owner_id": "amazon",
+                      "public_dns_name": "ec2-44-195-46-219.compute-1.amazonaws.com",
+                      "public_ip": "44.195.46.219"
+                    },
+                    "primary": true,
+                    "private_dns_name": "ip-12-0-1-137.ec2.internal",
+                    "private_ip_address": "12.0.1.137"
+                  }
+                ],
+                "source_dest_check": true,
+                "status": "in-use",
+                "subnet_id": "subnet-08b641931e3cf427f",
+                "vpc_id": "vpc-0e75651dee3db7ec7",
+                "interface_type": "interface"
+              }
+            ],
+            "root_device_name": "/dev/sda1",
+            "root_device_type": "ebs",
+            "security_groups": [
+              {
+                "group_name": "mbredemeSG_RHEL",
+                "group_id": "sg-08582304bb057ef26"
+              }
+            ],
+            "source_dest_check": true,
+            "tags": {
+              "Name": "aap_demo_test2",
+              "owner": "mbredeme",
+              "usage": "mbredemedemos",
+              "env": "prod",
+              "operating_system": "RHEL"
+            },
+            "virtualization_type": "hvm",
+            "cpu_options": {
+              "core_count": 2,
+              "threads_per_core": 2
+            },
+            "capacity_reservation_specification": {
+              "capacity_reservation_preference": "open"
+            },
+            "hibernation_options": {
+              "configured": false
+            },
+            "metadata_options": {
+              "state": "applied",
+              "http_tokens": "optional",
+              "http_put_response_hop_limit": 1,
+              "http_endpoint": "enabled",
+              "http_protocol_ipv6": "disabled",
+              "instance_metadata_tags": "disabled"
+            },
+            "enclave_options": {
+              "enabled": false
+            },
+            "platform_details": "Red Hat BYOL Linux",
+            "usage_operation": "RunInstances:00g0",
+            "usage_operation_update_time": "2023-11-01T13:48:03+00:00",
+            "private_dns_name_options": {
+              "hostname_type": "ip-name",
+              "enable_resource_name_dns_a_record": false,
+              "enable_resource_name_dns_aaaa_record": false
+            },
+            "maintenance_options": {
+              "auto_recovery": "default"
+            },
+            "current_instance_boot_mode": "legacy-bios"
+          }
+        ],
+        "spec": {
+          "ClientToken": "0359aed46bbb4267ad823f9748f68079",
+          "MaxCount": 1,
+          "MinCount": 1,
+          "ImageId": "ami-046981daef262e1d8",
+          "KeyName": "mbredemekey",
+          "NetworkInterfaces": [
+            {
+              "DeviceIndex": 0,
+              "AssociatePublicIpAddress": true,
+              "SubnetId": "subnet-08b641931e3cf427f",
+              "Groups": [
+                "sg-08582304bb057ef26"
+              ]
+            }
+          ],
+          "BlockDeviceMappings": [],
+          "TagSpecifications": [
+            {
+              "ResourceType": "volume",
+              "Tags": [
+                {
+                  "Key": "Name",
+                  "Value": "aap_demo_test2"
+                },
+                {
+                  "Key": "owner",
+                  "Value": "mbredeme"
+                },
+                {
+                  "Key": "env",
+                  "Value": "prod"
+                },
+                {
+                  "Key": "operating_system",
+                  "Value": "RHEL"
+                },
+                {
+                  "Key": "usage",
+                  "Value": "mbredemedemos"
+                }
+              ]
+            },
+            {
+              "ResourceType": "instance",
+              "Tags": [
+                {
+                  "Key": "Name",
+                  "Value": "aap_demo_test2"
+                },
+                {
+                  "Key": "owner",
+                  "Value": "mbredeme"
+                },
+                {
+                  "Key": "env",
+                  "Value": "prod"
+                },
+                {
+                  "Key": "operating_system",
+                  "Value": "RHEL"
+                },
+                {
+                  "Key": "usage",
+                  "Value": "mbredemedemos"
+                }
+              ]
+            }
+          ],
+          "InstanceType": "m5.xlarge"
+        },
+        "invocation": {
+          "module_args": {
+            "name": "aap_demo_test2",
+            "key_name": "mbredemekey",
+            "vpc_subnet_id": "subnet-08b641931e3cf427f",
+            "instance_type": "m5.xlarge",
+            "security_group": "mbredemeSG_RHEL",
+            "state": "running",
+            "wait": true,
+            "network": {
+              "assign_public_ip": true
+            },
+            "image_id": "ami-046981daef262e1d8",
+            "region": "us-east-1",
+            "tags": {
+              "Name": "aap_demo_test2",
+              "owner": "mbredeme",
+              "env": "prod",
+              "operating_system": "RHEL",
+              "usage": "mbredemedemos"
+            },
+            "access_key": "AKIAV2DUTATUCNMZI3OE",
+            "secret_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+            "validate_certs": true,
+            "debug_botocore_endpoint_logs": false,
+            "wait_timeout": 600,
+            "security_groups": [],
+            "purge_tags": true,
+            "hibernation_options": false,
+            "instance_ids": [],
+            "session_token": null,
+            "profile": null,
+            "endpoint_url": null,
+            "aws_ca_bundle": null,
+            "aws_config": null,
+            "count": null,
+            "exact_count": null,
+            "image": null,
+            "user_data": null,
+            "aap_callback": null,
+            "ebs_optimized": null,
+            "availability_zone": null,
+            "iam_instance_profile": null,
+            "filters": null,
+            "launch_template": null,
+            "cpu_credit_specification": null,
+            "cpu_options": null,
+            "tenancy": null,
+            "placement_group": null,
+            "instance_initiated_shutdown_behavior": null,
+            "termination_protection": null,
+            "detailed_monitoring": null,
+            "volumes": null,
+            "metadata_options": null
+          }
+        },
+        "failed": false,
+        "item": "aap_demo_test2",
+        "ansible_loop_var": "item"
+      }
+    ],
+    "skipped": false,
+    "changed": true,
+    "msg": "All items completed"
+  },
+  "_ansible_verbose_always": true,
+  "_ansible_no_log": null,
+  "changed": false
+}
