@@ -17,7 +17,7 @@
 
     - name: Extract installation tar.gz file
       ansible.builtin.unarchive:
-        src: "{{tar.results.dest}}"
+        src: "{{tar.dest}}"
         dest: /root    # Replace with the destination folder
         remote_src: no                      # Set to 'no' if the archive is local
       register: extraction_result
