@@ -38,12 +38,12 @@
 
     - name: directory without tar.gz
       debug:
-        msg: "{{extraction_result.dest | regex_replace('\\.tar\\.gz$', '') }}
+        msg: "{{extraction_result.dest | regex_replace('\\.tar\\.gz$', '') }}"
 
     - name: Add templages file to installation directory
       template:
         src: inventory{{aap_version}}.j2
-        dest: "{{extraction_result.dest | basename }}"
+        dest: "{{extraction_result.dest | regex_replace('\\.tar\\.gz$', '') }}"
   
     - name: show results
       debug:
