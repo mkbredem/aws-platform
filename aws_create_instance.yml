@@ -162,6 +162,8 @@
     
     - name: allocate elastic IPs for production
       block:
+      when: env_tag == "prod"
+      
         - name: allocate eip for prod servers
           amazon.aws.ec2_eip:
             region: "{{ _region_ }}"
@@ -192,33 +194,27 @@
               target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
           loop: "{{ run_eips.results[0].item.item.instances[0].public_dns_name }}"
 
-        - name:
+        - name: target hosts for prod
           debug:
             var: target_hosts
 
-        when: env_tag == "prod"
-
-    - name: allocate elastic IPs for production
+    - name: set target hosts IPs for non-prod serverse
       block:
-        when: env_tag != "prod"      
-
-    - name: initialize target_hosts as an empty list/array
-      set_fact:
-        target_hosts: []
-    
-    - name: load Windows instances into target_hosts list (used in future plays for config)
-      when: image_name == "windows2019" 
-      set_stats:
-        data: 
-          target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
-      loop: "{{ ec2_instance_facts_win.results[0].instances }}"
-    
-    - name: load RHEL instances into target_hosts list (used in future plays for config)
-      when: image_name is match("rhel*")
-      set_stats:
-        data: 
-          target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
-      loop: "{{ ec2_instance_facts_rhel.results[0].instances }}"
+      when: env_tag != "prod"      
+        
+        - name: load Windows instances into target_hosts list (used in future plays for config)
+          when: image_name == "windows2019" 
+          set_stats:
+            data: 
+              target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
+          loop: "{{ ec2_instance_facts_win.results[0].instances }}"
+        
+        - name: load RHEL instances into target_hosts list (used in future plays for config)
+          when: image_name is match("rhel*")
+          set_stats:
+            data: 
+              target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
+          loop: "{{ ec2_instance_facts_rhel.results[0].instances }}"
     
     - name: give instance time to initialize before configuration
       ansible.builtin.wait_for: 
