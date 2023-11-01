@@ -38,7 +38,7 @@
 
     - name: Add templages file to installation directory
       templates:
-        src: "inventory{{aap_version}}.j2"
+        src: inventory{{aap_version}}.j2
         dest: "{{extraction_result.dest | basename | regex_replace('\.tar\.gz$', '') }}"
   
     - name: show results
