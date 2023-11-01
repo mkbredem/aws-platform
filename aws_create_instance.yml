@@ -190,7 +190,7 @@
           set_stats:
             data: 
               target_hosts: "{{ target_hosts + [ item.item.instances[0].public_dns_name ] }}"
-          loop: "{{ run_eips.results[0] }}"
+          loop: "{{ run_eips.results }}"
 
         - name: target hosts for prod
           debug:
