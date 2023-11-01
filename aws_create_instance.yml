@@ -106,15 +106,16 @@
       when: image_name == "rhel92"
   
     - name: Create an Elastic IP address
-      ec2_vpc_eip:
+      amazon.aws.ec2_vpc_eip:
         region: "{{ _region_ }}"
       loop: '{{ vm_names }}'
       register: eips
       when: env_tag == prod
 
     - name: show eip structure
-        debug:  
-          vars: eips
+      debug:  
+         vars: eips
+      when: env_tag == prod
 
     - name: Create EC2 instance with public IP for RHEL
       amazon.aws.ec2_instance:
