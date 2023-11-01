@@ -131,8 +131,13 @@
     - name: allocate eip when prod
       amazon.aws.ec2_eip:
         device_id: "{{ item }}"
-      loop: "{{ec2_instance_facts.instance_ids}}"
+      loop: "{{ec2_instance_facts_rhel.instance_ids}}"
       when: env_tag == prod
+      register: eips
+
+    - name: show eip instance structures
+      debug:
+        vars: eips
 
     - name: ec2_instance_facts_rhel values
       debug:
