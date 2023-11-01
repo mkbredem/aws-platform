@@ -29,6 +29,11 @@
         dest: "/root"
       register: tar
 
+    - name: Ensure the directory exists
+      ansible.builtin.file:
+        path: /root/install_aap_{{aap_version}}
+        state: directory
+
     - name: Extract installation tar.gz file
       ansible.builtin.unarchive:
         src: "{{tar.dest}}"
