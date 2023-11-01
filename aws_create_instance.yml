@@ -128,21 +128,21 @@
       when: image_name is match("rhel.*")
       register: ec2_instance_facts_rhel
 
+    - name: ec2_instance_facts_rhel values
+      debug:
+        var: ec2_instance_facts_rhel
+
     - name: allocate eip when prod
       amazon.aws.ec2_eip:
         device_id: "{{ item.instance_id }}"
-      loop: "{{ec2_instance_facts_rhel.instances}}"
+      loop: "{{ec2_instance_facts_rhel.results[0].instances}}"
       when: env_tag == prod
-      register: eips
+      register: eips    
 
     - name: show eip instance structures
       debug:
         vars: eips
 
-    - name: ec2_instance_facts_rhel values
-      debug:
-        var: ec2_instance_facts_rhel
-    
     - name: Create EC2 instance with public IP for Windows
       amazon.aws.ec2_instance:
         name: "{{ item }}"
@@ -176,7 +176,7 @@
       set_stats:
         data: 
           target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
-      loop: "{{ ec2_instance_facts_win.instances }}"
+      loop: "{{ ec2_instance_facts_win.results[0].instances }}"
     
     - name: load RHEL instances into target_hosts list (used in future plays for config)
       when: image_name is match("rhel*")
