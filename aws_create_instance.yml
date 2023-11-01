@@ -134,7 +134,7 @@
 
     - name: allocate eip when prod
       amazon.aws.ec2_eip:
-        device_id: "{{ item.instances.instance_id }}"
+        device_id: "{{ item.instances[0].instance_id }}"
       loop: "{{ec2_instance_facts_rhel.results}}"
       when: env_tag == "prod"
       register: eips    
