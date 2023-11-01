@@ -38,7 +38,7 @@
 
     - name: directory without tar.gz
       debug:
-        msg: "{{extraction_result.dest | basename }}"
+        msg: "{{extraction_result.dest | regex_replace('\\.tar\\.gz$', '') }}
 
     - name: Add templages file to installation directory
       template:
