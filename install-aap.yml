@@ -13,11 +13,18 @@
       get_url:
         url: "{{installer_url}}"
         dest: "/root"
-      register: results
+      register: tar
+
+    - name: Extract installation tar.gz file
+      ansible.builtin.unarchive:
+        src: "{{tar.results.dest}}"
+        dest: /root    # Replace with the destination folder
+        remote_src: no                      # Set to 'no' if the archive is local
+      register: extraction_result
 
     - name: show results
       debug:
-        var: results
+        var: extraction_result
 
 #    - name: download backup file
 #      get_url:
