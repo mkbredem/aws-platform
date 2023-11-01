@@ -53,12 +53,14 @@
         dest: /root/install_aap_{{aap_version}}/
 
     - name: Run setup.sh script
-      ansible.builtin.script:
-        script: /root/install_aap_{{aap_version}}/setup.sh
+      ansible.builtin.shell: setup.sh >> installlog.txt
+        args:
+          chdir: /root/install_aap_{{aap_version}}/
+          creates: installlog.txt   
 
-    - name: show results
-      debug:
-        var: extraction_result
+#    - name: show results
+#      debug:
+#        var: extraction_result
 
 #    - name: download backup file
 #      get_url:
