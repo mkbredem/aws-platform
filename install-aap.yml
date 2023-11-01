@@ -54,9 +54,9 @@
 
     - name: Run setup.sh script
       ansible.builtin.shell: setup.sh >> installlog.txt
-        args:
-          chdir: /root/install_aap_{{aap_version}}/
-          creates: installlog.txt   
+      args:
+        chdir: /root/install_aap_{{aap_version}}/
+        creates: installlog.txt   
 
 #    - name: show results
 #      debug:
