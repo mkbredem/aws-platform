@@ -156,6 +156,10 @@
       when: image_name is match("win.*")
       register: ec2_instance_facts_win
 
+    - name: give instance time to initialize before configuration
+      ansible.builtin.wait_for: 
+        timeout: 150
+
     - name: initialize target_hosts as an empty list/array
       set_fact:
         target_hosts: []
@@ -216,10 +220,7 @@
           loop: "{{ ec2_instance_facts_rhel.results[0].instances }}"
       when: env_tag != "prod"  
     
-    - name: give instance time to initialize before configuration
-      ansible.builtin.wait_for: 
-        timeout: 150
-    
+
     
     
     
