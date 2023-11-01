@@ -148,7 +148,7 @@
       amazon.aws.ec2_eip_info:
         region: "{{ _region_ }}"
         filters:
-          allocation_id: "{{ item.allocation_id }}"
+          allocation-id: "{{ item.allocation_id }}"
       loop: "{{ eips.results }}"
       register: run_eips
 
