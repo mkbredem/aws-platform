@@ -35,7 +35,7 @@
       register: html_response
 
     - name: HTML Status
-      debut:
+      debug:
         var: html_response
 
 #    - name: Run setup.sh script
