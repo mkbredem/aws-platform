@@ -2,21 +2,7 @@
 - name: install aap from backup
   hosts: _aap_demo_controller
   vars: 
-    installer_url:
-      rhel_8:
-        2-4:
-          bundled: 'https://access.cdn.redhat.com/content/origin/files/sha256/20/20efbcb21d32859bfb0e0f5cd42504f42ef808937a27d96b9c075e00ec6a3bab/ansible-automation-platform-setup-bundle-2.4-2.3-x86_64.tar.gz?user=145a9a523e663ed1033cd6d7d781ba2c&_auth_=1698871603_0050f6b2dc0de5bc55a607cb97667c00'
-          not_bundled: 'https://access.cdn.redhat.com/content/origin/files/sha256/eb/eb4573d15785d441782279ac7404d763e3905e7032f38d8bfa40bc75c68f9ea1/ansible-automation-platform-setup-2.4-2.tar.gz?user=145a9a523e663ed1033cd6d7d781ba2c&_auth_=1698886444_25e9f95b34ccedb50052ba82952f3449'
-        2-3:
-          bundled: 'https://access.cdn.redhat.com/content/origin/files/sha256/0a/0ac83f3efd0f28901881ab67b7df6987c5f27557baceabbe8c7b31b2d8b78804/ansible-automation-platform-setup-bundle-2.3-2.10.tar.gz?user=145a9a523e663ed1033cd6d7d781ba2c&_auth_=1698874488_7e773bf0b6f85b5475cd10f0d6a182e8'
-          not_bundled: 'https://access.cdn.redhat.com/content/origin/files/sha256/87/879e97e4c63de3727657284eb05a3a9e9897c66bd5059183d804d20f579c75a0/ansible-automation-platform-setup-2.3-2.tar.gz?user=145a9a523e663ed1033cd6d7d781ba2c&_auth_=1698874488_bbe2156ab7f53f599920633c875e9b18'
-      rhel_9:
-        2-4:
-          bundled: 'https://access.cdn.redhat.com/content/origin/files/sha256/20/20efbcb21d32859bfb0e0f5cd42504f42ef808937a27d96b9c075e00ec6a3bab/ansible-automation-platform-setup-bundle-2.4-2.3-x86_64.tar.gz?user=145a9a523e663ed1033cd6d7d781ba2c&_auth_=1698875317_62db9dcdca113f0f3120a8e13c1b4b30'
-          not_bundled: 'https://access.cdn.redhat.com/content/origin/files/sha256/eb/eb4573d15785d441782279ac7404d763e3905e7032f38d8bfa40bc75c68f9ea1/ansible-automation-platform-setup-2.4-2.tar.gz?user=145a9a523e663ed1033cd6d7d781ba2c&_auth_=1698875317_1008ba334f315ccec6761c8a30790415'
-        2-3:
-          bundled: 'https://access.cdn.redhat.com/content/origin/files/sha256/0a/0ac83f3efd0f28901881ab67b7df6987c5f27557baceabbe8c7b31b2d8b78804/ansible-automation-platform-setup-bundle-2.3-2.10.tar.gz?user=145a9a523e663ed1033cd6d7d781ba2c&_auth_=1698875379_9b26b93b17ff3abfe181e9b5a01f4c5b'
-          not_bundled: 'https://access.cdn.redhat.com/content/origin/files/sha256/87/879e97e4c63de3727657284eb05a3a9e9897c66bd5059183d804d20f579c75a0/ansible-automation-platform-setup-2.3-2.tar.gz?user=145a9a523e663ed1033cd6d7d781ba2c&_auth_=1698875379_9dd306454b256ede6ab27c0404920ae6'
+    installer_url: 'https://access.cdn.redhat.com/content/origin/files/sha256/eb/eb4573d15785d441782279ac7404d763e3905e7032f38d8bfa40bc75c68f9ea1/ansible-automation-platform-setup-2.4-2.tar.gz?user=145a9a523e663ed1033cd6d7d781ba2c&_auth_=1698886444_25e9f95b34ccedb50052ba82952f3449'
     backup_tar_url: 'https://www.dropbox.com/scl/fi/x2ai7dzbtkclowvjoqt6x/ac_backup2023-10-25_version_2.4-1.tar.gz?rlkey=ao33mgq52aaszo6gqtk5wj39r&dl=0'
     aap_version: '2-4'
     rhel_os: "rhel_8"
@@ -25,7 +11,7 @@
   tasks:
     - name: download installation tar file
       get_url:
-        url: "{{installer_url[rhel_os][aap_version][bundle]}}"
+        url: "{{installer_url}}"
         dest: "/root"
       register: tar
 
@@ -38,31 +24,26 @@
       command: tar -xzf {{tar.dest}} --strip-components=1 -C /root/install_aap_{{aap_version}}/
       register: extraction_result
 
-#    - name: Extract installation tar.gz file
-#      ansible.builtin.unarchive:
-#        src: "{{tar.dest}}"
-#        dest: /root
-#        creates: install_aap_{{aap_version}}/
-#        remote_src: yes
-#        list_files: True
-#      register: extraction_result
-
     - name: Add templages file to installation directory
       template:
         src: inventory{{aap_version}}.j2
         dest: /root/install_aap_{{aap_version}}/inventory
 
-    - name: Run setup.sh script
-      ansible.builtin.shell: ./setup.sh
-      args:
-        chdir: /root/install_aap_{{aap_version}}/
- 
+    - name: Fetch HTML page
+      ansible.builtin.uri:
+        url: http://ec2-23-20-120-44.compute-1.amazonaws.com/
+      register: html_response
 
-#    - name: show results
-#      debug:
-#        var: extraction_result
+    - name: HTML Status
+      debut:
+        var: html_response
 
-#    - name: download backup file
-#      get_url:
-#        url: "{{backup_tar_url}}"
-#        dest: "/root"
+#    - name: Run setup.sh script
+#      ansible.builtin.shell: ./setup.sh
+#      args:
+#        chdir: /root/install_aap_{{aap_version}}/
+
+    - name: download backup file
+      get_url:
+        url: "{{backup_tar_url}}"
+        dest: "/root/install_aap_{{aap_version}}/"
