@@ -29,14 +29,14 @@
         src: inventory{{aap_version}}.j2
         dest: /root/install_aap_{{aap_version}}/inventory
 
-    - name: Fetch HTML page
-      ansible.builtin.uri:
-        url: http://ec2-23-20-120-44.compute-1.amazonaws.com/
-      register: html_response
-
-    - name: HTML Status
-      debug:
-        var: html_response
+#    - name: Fetch HTML page
+#      ansible.builtin.uri:
+#        url: http://ec2-23-20-120-44.compute-1.amazonaws.com/
+#      register: html_response
+#
+#    - name: HTML Status
+#      debug:
+#        var: html_response
 
     - name: Run setup.sh script
       ansible.builtin.shell: ./setup.sh
