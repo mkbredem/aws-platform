@@ -2,7 +2,7 @@
 - name: install aap from backup
   hosts: aap_demo_controller
   vars: 
-    installer_url: 'https://access.cdn.redhat.com/content/origin/files/sha256/eb/eb4573d15785d441782279ac7404d763e3905e7032f38d8bfa40bc75c68f9ea1/ansible-automation-platform-setup-2.4-2.tar.gz?user=145a9a523e663ed1033cd6d7d781ba2c&_auth_=1698886444_25e9f95b34ccedb50052ba82952f3449'
+    installer_url: 'https://access.cdn.redhat.com/content/origin/files/sha256/eb/eb4573d15785d441782279ac7404d763e3905e7032f38d8bfa40bc75c68f9ea1/ansible-automation-platform-setup-2.4-2.tar.gz?user=145a9a523e663ed1033cd6d7d781ba2c&_auth_=1698933853_3ceab3231e72a275cb050231312df18d'
     backup_tar_url: 'https://www.dropbox.com/scl/fi/x2ai7dzbtkclowvjoqt6x/ac_backup2023-10-25_version_2.4-1.tar.gz?rlkey=ao33mgq52aaszo6gqtk5wj39r&dl=0'
     aap_version: '2-4'
     rhel_os: "rhel_8"
