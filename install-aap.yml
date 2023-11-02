@@ -20,9 +20,9 @@
         path: /root/install_aap_{{aap_version}}
         state: directory
 
-    - name: extract installation tar file
-      command: tar -xzf {{tar.dest}} --strip-components=1 -C /root/install_aap_{{aap_version}}/
-      register: extraction_result
+#    - name: extract installation tar file
+#      command: tar -xzf {{tar.dest}} --strip-components=1 -C /root/install_aap_{{aap_version}}/
+#      register: extraction_result
 
     - name: Add templages file to installation directory
       template:
