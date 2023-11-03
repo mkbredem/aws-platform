@@ -14,6 +14,6 @@
         dest: "/root/install_aap_{{aap_version}}/"
 
     - name: Run setup.sh with backup option
-      ansible.builtin.shell: ./setup.sh -b
+      ansible.builtin.shell: ./setup.sh -e 'restore_backup_file=/root/install_aap_{{aap_version}}' -r
       args:
         chdir: /root/install_aap_{{aap_version}}/
