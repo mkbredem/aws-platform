@@ -1,0 +1,19 @@
+---
+- name: restore postgres backup database to automation controller
+  hosts: aap_demo_controller
+  vars: 
+    backup_tar_url: 'https://www.dropbox.com/scl/fi/x2ai7dzbtkclowvjoqt6x/ac_backup2023-10-25_version_2.4-1.tar.gz?rlkey=ao33mgq52aaszo6gqtk5wj39r&dl=0'
+    aap_version: '2-4'
+    rhel_os: "rhel_8"
+    bundle: "not_bundled"
+
+  tasks:
+    - name: download backup file
+      get_url:
+        url: "{{backup_tar_url}}"
+        dest: "/root/install_aap_{{aap_version}}/"
+
+    - name: Run setup.sh with backup option
+      ansible.builtin.shell: ./setup.sh -b
+      args:
+        chdir: /root/install_aap_{{aap_version}}/
