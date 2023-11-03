@@ -8,6 +8,13 @@
     bundle: "not_bundled"
 
   tasks:
+    - name: install extraction dependencies
+      yum:
+        name: 
+          - gzip
+          - bzip2
+        state: present
+
     - name: download backup file
       get_url:
         url: "{{backup_tar_url}}"
