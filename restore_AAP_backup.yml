@@ -33,6 +33,6 @@
 #      register: backup_file
 
     - name: Run setup.sh with restore option
-      ansible.builtin.shell: ./setup.sh -e 'restore_backup_file={{backup_file.dest}}' -r
+      ansible.builtin.shell: ./setup.sh -e 'restore_backup_file={{backup_file_name}}' -r
       args:
         chdir: /root/install_aap_{{aap_version}}/
