@@ -19,11 +19,14 @@
 
     - name: download backup from dropbox
       ansible.builtin.shell: >
-        curl -X POST https://content.dropboxapi.com/2/files/download 
-        --header "Authorization: Bearer {{ access_token }}"
-        --header "Dropbox-API-Arg: {\"path\": \"/Apps/Automation_Controller/ac_backup{{ backup_file_name }}\"}" 
-        --header "Content-Type: application/octet-stream" 
-        --data-binary @automation-platform-backup-latest.tar.gz
+        curl -o {{install_dir}}{{backup_file_name}}   -X POST https://content.dropboxapi.com/2/files/download   
+        --header "Authorization: Bearer {{access_token}}"   
+        --header "Dropbox-API-Arg: {\"path\":\"/Apps/Automation_Controller/{{backup_file_name}}\"}"
+#        curl -X POST https://content.dropboxapi.com/2/files/download 
+#        --header "Authorization: Bearer {{ access_token }}"
+#        --header "Dropbox-API-Arg: {\"path\": \"/Apps/Automation_Controller/ac_backup{{ backup_file_name }}\"}" 
+#        --header "Content-Type: application/octet-stream" 
+#        --data-binary @automation-platform-backup-latest.tar.gz
       args:
         chdir: "{{install_dir}}"
       register: backup_file
