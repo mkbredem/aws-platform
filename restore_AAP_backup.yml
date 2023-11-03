@@ -12,8 +12,9 @@
       get_url:
         url: "{{backup_tar_url}}"
         dest: "/root/install_aap_{{aap_version}}/"
+      register: backup_file
 
     - name: Run setup.sh with restore option
-      ansible.builtin.shell: ./setup.sh -e 'restore_backup_file=/root/install_aap_{{aap_version}}' -r
+      ansible.builtin.shell: ./setup.sh -e 'restore_backup_file={{backup_file.result[0].dest}}' -r
       args:
         chdir: /root/install_aap_{{aap_version}}/
