@@ -45,6 +45,5 @@
             chdir: "{{install_dir}}"
           register: restore_output
       rescue:
-        - name: restore_output
-          debug: 
-            var: restore_output.stdout_lines[-1][20:-2]
+        - name: show /var/log/tower/restore...log output
+          command: cat {{ restore_output.stdout_lines[-1][20:-1] }}
