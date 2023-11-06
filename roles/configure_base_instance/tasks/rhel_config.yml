@@ -79,6 +79,9 @@
         enabled: yes
         state: started
 
+    - name: update insights-client with new name to avoide error
+      command: insights-client --register
+
     - name: add {{ lookup('env', 'PORTAL_USERNAME') }} user
       ansible.builtin.user:
         name: "{{ lookup('env', 'PORTAL_USERNAME') }}"
