@@ -36,8 +36,15 @@
 #        url: "{{backup_tar_url}}"
 #        dest: "{{install_dir}}"
 #      register: backup_file
-
+    
     - name: Run setup.sh with restore option
-      ansible.builtin.shell: ./setup.sh -e 'restore_backup_file={{install_dir}}{{backup_file_name}}' -r
-      args:
-        chdir: "{{install_dir}}"
+      block:
+        - name: restore postressql
+          ansible.builtin.shell: ./setup.sh -e 'restore_backup_file={{install_dir}}{{backup_file_name}}' -r
+          args:
+            chdir: "{{install_dir}}"
+          register: restore_output
+      recover:
+        - name: restore_output
+          debug: 
+            var: restore_output.stdout_lines[-1][20:-2]
