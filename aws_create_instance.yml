@@ -86,9 +86,9 @@
           loop: "{{ec2_instance_facts_rhel.results}}"
           register: eips    
 
-#        - name: give public dns time to convert to eip allocated
-#          ansible.builtin.wait_for: 
-#            timeout: 150
+        - name: give public dns time to convert to eip allocated
+          ansible.builtin.wait_for: 
+            timeout: 150
 
         - name: show eip instance structures
           debug:
