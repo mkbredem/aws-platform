@@ -46,4 +46,4 @@
           register: restore_output
       rescue:
         - name: show /var/log/tower/restore...log output
-          command: cat {{ restore_output.stdout_lines[-1][19:-1] }}
+          command: cat {{ restore_output.stdout_lines[-1][19:-1] }} | fold -w 120
