@@ -17,7 +17,7 @@
         state: present
 
     - name: 
-      command: wget {{bakup_tar_url}}
+      command: wget {{backup_tar_url}}
       args:
         chdir: "{{install_dir}}"
 
