@@ -9,16 +9,29 @@
     bundle: "not_bundled"
 
   tasks:
-    - name: download installation tar file
+    - name: download installation tar file from CDN
       get_url:
         url: "{{installer_url}}"
         dest: "/root"
       register: tar
+      tags: download
+      when: "access.cdn.redhat" in installer_url
+
+    - name: download Installer from dropbox
+      ansible.builtin.shell: >
+        curl -o {{install_dir}}{{backup_file_name}}   -X POST https://content.dropboxapi.com/2/files/download   
+        --header "Authorization: Bearer {{access_token}}"   
+        --header "Dropbox-API-Arg: {\"path\":\"/Apps/Automation_Controller/{{backup_file_name}}\"}"
+      args:
+        chdir: "{{install_dir}}"
+      register: backup_file
+      when: "dropbox" in installer_url
 
     - name: Ensure the directory exists
       ansible.builtin.file:
         path: /root/install_aap_{{aap_version}}
         state: directory
+      tags: download
 
     - name: extract installation tar file
       command: tar -xzf {{tar.dest}} --strip-components=1 -C /root/install_aap_{{aap_version}}/
@@ -43,7 +56,19 @@
       args:
         chdir: /root/install_aap_{{aap_version}}/
 
-    - name: download backup file
-      get_url:
-        url: "{{backup_tar_url}}"
-        dest: "/root/install_aap_{{aap_version}}/"
+    - name: backup isntallation version to dropbox (needed for future restores)
+      ansible.builtin.shell: >
+        curl -X POST https://content.dropboxapi.com/2/files/upload 
+        --header "Authorization: Bearer {{ access_token }}"
+        --header "Dropbox-API-Arg: {\"path\": \"/Apps/Automation_Controller/{{tar.dest}}\",\"mode\": \"overwrite\",\"autorename\": true,\"mute\": false}" 
+        --header "Content-Type: application/octet-stream" 
+        --data-binary @{{tar.dest}}
+      args:
+        chdir: "{{ install_dir }}"
+      tags: download
+
+
+#    - name: download backup file
+#      get_url:
+#        url: "{{backup_tar_url}}"
+#        dest: "/root/install_aap_{{aap_version}}/"
