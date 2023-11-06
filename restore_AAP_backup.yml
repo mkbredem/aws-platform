@@ -16,10 +16,13 @@
           - wget
         state: present
 
-    - name: 
-      command: wget {{backup_tar_url}}
-      args:
-        chdir: "{{install_dir}}"
+#    - name: 
+#      command: wget {{backup_tar_url}}
+#      args:
+#        chdir: "{{install_dir}}"
+#
+#    - name:
+#      command: mv {{}}
 
 #    - name: download backup from dropbox
 #      ansible.builtin.shell: >
@@ -37,11 +40,11 @@
 #        --data-binary @automation-platform-backup-latest.tar.gz
 
 
-#    - name: download backup file
-#      get_url:
-#        url: "{{backup_tar_url}}"
-#        dest: "{{install_dir}}"
-#      register: backup_file
+    - name: download backup file
+      get_url:
+        url: "{{backup_tar_url}}"
+        dest: "{{install_dir}}"
+      register: backup_file
     
     - name: Run setup.sh with restore option
       block:
