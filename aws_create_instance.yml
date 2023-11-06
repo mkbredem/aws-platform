@@ -89,7 +89,11 @@
             device_id: "{{ item.instances[0].instance_id }}"
           loop: "{{ec2_instance_facts_rhel.results}}"
           register: eips    
-    
+
+    - name: give instance time to initialize before configuration
+      ansible.builtin.wait_for: 
+        timeout: 15
+
         - name: show eip instance structures
           debug:
             var: eips
