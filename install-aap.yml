@@ -15,7 +15,7 @@
         dest: "/root"
       register: tar
       tags: download
-      when: "access.cdn.redhat" in installer_url
+      when: "'access.cdn.redhat' in installer_url"
 
     - name: download Installer from dropbox
       ansible.builtin.shell: >
@@ -25,7 +25,7 @@
       args:
         chdir: "{{install_dir}}"
       register: backup_file
-      when: "dropbox" in installer_url
+      when: "'dropbox' in installer_url"
 
     - name: Ensure the directory exists
       ansible.builtin.file:
