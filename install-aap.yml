@@ -3,7 +3,7 @@
   hosts: aap_demo_controller
   vars: 
     installer_url: 'https://www.dropbox.com/scl/fi/fxjbzrn64eclsdbxgohka/ansible-automation-platform-setup-bundle-2.4-1.1-x86_64.tar?rlkey=wv5w5iip4hoz2fxbzmuwvjk41&dl=0'
-    installer_file_name: 'https://www.dropbox.com/scl/fi/fxjbzrn64eclsdbxgohka/ansible-automation-platform-setup-bundle-2.4-1.1-x86_64.tar
+    installer_file_name: 'https://www.dropbox.com/scl/fi/fxjbzrn64eclsdbxgohka/ansible-automation-platform-setup-bundle-2.4-1.1-x86_64.tar'
     backup_tar_url: 'https://www.dropbox.com/scl/fi/x2ai7dzbtkclowvjoqt6x/ac_backup2023-10-25_version_2.4-1.tar.gz?rlkey=ao33mgq52aaszo6gqtk5wj39r&dl=0'
     backup_file_name: backup_file_name: ac_backup2023-10-25_version_2.4-1.tar.gz #as it appears in dropbox
     aap_version: '2-4.1'
