@@ -65,7 +65,7 @@
     - name: Run setup.sh script
       ansible.builtin.shell: ./setup.sh
       args:
-        chdir: "{{install_dir}}/install-{{aap_version}}-{{bundle}}"
+        chdir: "{{install_dir}}/installer-{{aap_version}}-{{bundle}}"
 
     - name: backup isntallation version to dropbox (needed for future restores)
       ansible.builtin.shell: >
