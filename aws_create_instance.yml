@@ -93,37 +93,37 @@
           loop: "{{ec2_instance_facts_rhel.results}}"
           register: eips_from_info
 
-        - name: give public dns time to convert to eip allocated
-          ansible.builtin.wait_for: 
-            timeout: 150
+#        - name: give public dns time to convert to eip allocated
+#          ansible.builtin.wait_for: 
+#            timeout: 150
 
-        - name: show eip instance structures
-          debug:
-            var: eips
+#        - name: show eip instance structures
+#          debug:
+#            var: eips
     
-        - name: get eipinfo
-          amazon.aws.ec2_eip_info:
-            region: "{{ _region_ }}"
-            filters:
-              allocation-id: "{{ item.allocation_id }}"
-          loop: "{{ eips.results }}"
-          register: run_eips
+#        - name: get eipinfo
+#          amazon.aws.ec2_eip_info:
+#            region: "{{ _region_ }}"
+#            filters:
+#              allocation-id: "{{ item.allocation_id }}"
+#          loop: "{{ eips.results }}"
+#          register: run_eips
     
-        - name: show this runs eips
-          debug:
-            var: run_eips
+#        - name: show this runs eips
+#          debug:
+#            var: run_eips
         
         - name: load production RHEL instances into target_hosts list (used in future plays for config)
           when: image_name is match("rhel*")
           set_stats:
             data: 
-              target_hosts: "{{ target_hosts + [ item.item.item.instances[0].public_dns_name ] }}"
-          loop: "{{ run_eips.results }}"
+              target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
+          loop: "{{ eips_from_info.instances }}"
 
         - name: target hosts for prod
           debug:
-            msg: "{{ item.item.item.instances[0].public_dns_name }}"
-          loop: "{{ run_eips.results }}"
+            msg: "{{ item.public_dns_name }}"
+          loop: "{{ eips_from_info.instances }}"
 
       when: env_tag == "prod" 
 
