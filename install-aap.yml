@@ -43,7 +43,7 @@
           register: tar_from_dropbox
 
         - name: extract installation tar file
-          command: tar -xf installer-{{aap_version}}-{{bundle}}.tar.gz --strip-components=1 -C {{install_dir}}/installer-{{aap_version}}-{{bundle}}/
+          command: tar -xf {{install_dir}}/installer-{{aap_version}}-{{bundle}}.tar.gz --strip-components=1 -C {{install_dir}}/installer-{{aap_version}}-{{bundle}}/
           register: extraction_result
 
       when: "'dropbox' in installer_url"
