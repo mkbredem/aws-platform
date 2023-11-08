@@ -44,7 +44,7 @@
     - name: Add templates file to installation directory
       template:
         src: inventory{{aap_version}}.j2
-        dest: {{install_dir}}/install-{{aap_version}}-{{bundle}}/inventory
+        dest: "{{install_dir}}/install-{{aap_version}}-{{bundle}}/inventory"
 
 #    - name: Fetch HTML page
 #      ansible.builtin.uri:
