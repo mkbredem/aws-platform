@@ -100,18 +100,6 @@
         - name: show eip instance structures
           debug:
             var: eips_from_info
-    
-#        - name: get eipinfo
-#          amazon.aws.ec2_eip_info:
-#            region: "{{ _region_ }}"
-#            filters:
-#              allocation-id: "{{ item.allocation_id }}"
-#          loop: "{{ eips.results }}"
-#          register: run_eips
-    
-#        - name: show this runs eips
-#          debug:
-#            var: run_eips
         
         - name: load production RHEL instances into target_hosts list (used in future plays for config)
           when: image_name is match("rhel*")
@@ -123,7 +111,7 @@
         - name: target hosts for prod
           debug:
             msg: "{{ item.public_dns_name }}"
-          loop: "{{ eips_from_info.instances }}"
+          loop: "{{ eips_from_info.results[0].instances }}"
 
       when: env_tag == "prod" 
 
