@@ -14,7 +14,7 @@
   tasks:
     - name: Ensure install directory exists
       ansible.builtin.file:
-        path: "{{install_dir}}/install-{{aap_version}}-{{bundle}}"
+        path: "{{install_dir}}/installer-{{aap_version}}-{{bundle}}"
         state: directory
 
 #    - name: download and extract installer file from CDN
@@ -43,7 +43,7 @@
           register: tar_from_dropbox
 
         - name: extract installation tar file
-          command: tar -xzf installer-{{aap_version}}-{{bundle}}.tar.gz --strip-components=1 -C installer-{{aap_version}}-{{bundle}}/
+          command: tar -xf installer-{{aap_version}}-{{bundle}}.tar.gz --strip-components=1 -C installer-{{aap_version}}-{{bundle}}/
           register: extraction_result
 
       when: "'dropbox' in installer_url"
