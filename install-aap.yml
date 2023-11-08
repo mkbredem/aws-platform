@@ -12,7 +12,7 @@
   tasks:
     - name: Ensure install directory exists
       ansible.builtin.file:
-        path: {{install_dir}}/install-{{aap_version}}-{{bundle}}
+        path: "{{install_dir}}/install-{{aap_version}}-{{bundle}}""
         state: directory
 
     - name: download and extract installer file from CDN
