@@ -97,9 +97,9 @@
 #          ansible.builtin.wait_for: 
 #            timeout: 150
 
-#        - name: show eip instance structures
-#          debug:
-#            var: eips
+        - name: show eip instance structures
+          debug:
+            var: eips_from_info
     
 #        - name: get eipinfo
 #          amazon.aws.ec2_eip_info:
