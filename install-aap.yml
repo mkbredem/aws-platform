@@ -15,18 +15,18 @@
         path: "{{install_dir}}/install-{{aap_version}}-{{bundle}}"
         state: directory
 
-    - name: download and extract installer file from CDN
-      block: 
-        - name: download tar - CDN
-          get_url:
-            url: "{{installer_url}}"
-            dest: "/root"
-          register: tar_from_cdn
-
-    - name: extract installation tar file
-      command: tar -xzf {{tar_from_cdn.dest}} --strip-components=1 -C /root/install_aap_{{aap_version}}/
-      register: extraction_result
-
+#    - name: download and extract installer file from CDN
+#      block: 
+#        - name: download tar - CDN
+#          get_url:
+#            url: "{{installer_url}}"
+#            dest: "/root"
+#          register: tar_from_cdn
+#
+#        - name: extract installation tar file
+#          command: tar -xzf {{tar_from_cdn.dest}} --strip-components=1 -C /root/install_aap_{{aap_version}}/
+#          register: extraction_result
+#    
       when: "'access.cdn.redhat' in installer_url"
 
     - name: download and exxtract Installer from dropbox
@@ -39,6 +39,11 @@
           args:
             chdir: "{{install_dir}}"
           register: tar_from_dropbox
+
+        - name: extract installation tar file
+          command: tar -xzf installer-{{aap_version}}-{{bundle}}.tar.gz --strip-components=1 -C /root/install_aap_{{aap_version}}/
+          register: extraction_result
+
       when: "'dropbox' in installer_url"
 
     - name: Add templates file to installation directory
