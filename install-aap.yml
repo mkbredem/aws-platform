@@ -6,38 +6,42 @@
     backup_tar_url: 'https://www.dropbox.com/scl/fi/x2ai7dzbtkclowvjoqt6x/ac_backup2023-10-25_version_2.4-1.tar.gz?rlkey=ao33mgq52aaszo6gqtk5wj39r&dl=0'
     aap_version: '2-4'
     rhel_os: "rhel_8"
-    bundle: "not_bundled"
+    bundle: "not_bundled" # options "bundled" or "not_bundled"
+    install_dir: /root
 
   tasks:
-    - name: download installation tar file from CDN
-      get_url:
-        url: "{{installer_url}}"
-        dest: "/root"
-      register: tar
-      tags: download
-      when: "'access.cdn.redhat' in installer_url"
-
-    - name: download Installer from dropbox
-      ansible.builtin.shell: >
-        curl -o {{install_dir}}{{backup_file_name}}   -X POST https://content.dropboxapi.com/2/files/download   
-        --header "Authorization: Bearer {{access_token}}"   
-        --header "Dropbox-API-Arg: {\"path\":\"/Apps/Automation_Controller/{{backup_file_name}}\"}"
-      args:
-        chdir: "{{install_dir}}"
-      register: backup_file
-      when: "'dropbox' in installer_url"
-
-    - name: Ensure the directory exists
+    - name: Ensure install directory exists
       ansible.builtin.file:
-        path: /root/install_aap_{{aap_version}}
+        path: {{install_dir}}/install-{{aap_version}}-{{bundle}}
         state: directory
-      tags: download
+
+    - name: download and extract installer file from CDN
+      block: 
+        - name: download tar
+          get_url:
+            url: "{{installer_url}}"
+            dest: "/root"
+          register: tar_from_cdn
 
     - name: extract installation tar file
-      command: tar -xzf {{tar.dest}} --strip-components=1 -C /root/install_aap_{{aap_version}}/
+      command: tar -xzf {{tar_from_cdn.dest}} --strip-components=1 -C /root/install_aap_{{aap_version}}/
       register: extraction_result
 
-    - name: Add templages file to installation directory
+      when: "'access.cdn.redhat' in installer_url"
+
+    - name: download and exxtract Installer from dropbox
+      block:
+        - name: download tar
+          ansible.builtin.shell: >
+            curl -o installer-{{aap_version}}-{{bundle}}.tar.gz   -X POST https://content.dropboxapi.com/2/files/download   
+            --header "Authorization: Bearer {{access_token}}"   
+            --header "Dropbox-API-Arg: {\"path\":\"/Apps/Automation_Controller/{{backup_file_name}}\"}"
+          args:
+            chdir: "{{install_dir}}"
+          register: tar_from_dropbox
+      when: "'dropbox' in installer_url"
+
+    - name: Add templates file to installation directory
       template:
         src: inventory{{aap_version}}.j2
         dest: /root/install_aap_{{aap_version}}/inventory
