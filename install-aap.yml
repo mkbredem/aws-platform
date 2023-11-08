@@ -17,7 +17,7 @@
 
     - name: download and extract installer file from CDN
       block: 
-        - name: download tar
+        - name: download tar - CDN
           get_url:
             url: "{{installer_url}}"
             dest: "/root"
@@ -31,7 +31,7 @@
 
     - name: download and exxtract Installer from dropbox
       block:
-        - name: download tar
+        - name: download tar dropbox
           ansible.builtin.shell: >
             curl -o installer-{{aap_version}}-{{bundle}}.tar.gz   -X POST https://content.dropboxapi.com/2/files/download   
             --header "Authorization: Bearer {{access_token}}"   
