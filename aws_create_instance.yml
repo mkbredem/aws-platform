@@ -87,7 +87,7 @@
           register: eips    
 
         - name: ec2 Instance information
-          amazon.aws.ec2_info:
+          amazon.aws.ec2_instance_info:
             region: "{{ _region_ }}"
             instance_ids: "{{ item.instances[0] }}"
           loop: "{{ec2_instance_facts_rhel.results}}"
