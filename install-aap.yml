@@ -27,7 +27,7 @@
 #          command: tar -xzf {{tar_from_cdn.dest}} --strip-components=1 -C /root/install_aap_{{aap_version}}/
 #          register: extraction_result
 #    
-      when: "'access.cdn.redhat' in installer_url"
+#      when: "'access.cdn.redhat' in installer_url"
 
     - name: download and exxtract Installer from dropbox
       block:
