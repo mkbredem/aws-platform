@@ -41,6 +41,11 @@
           env: "{{ env }}"
           operating_system: "RHEL"
           usage: "{{vpc_prefix}}demos"
+        volumes:
+          - device_name: /dev/xvda
+            ebs:
+              volume_size: "{{ storage | default(40) }}"
+              delete_on_termination: true
       loop: "{{ vm_names }}"
       when: image_name is match("rhel.*")
       register: ec2_instance_facts_rhel
