@@ -3,15 +3,20 @@
   hosts: aap_demo_controller
   vars: 
     installer_url: 'https://www.dropbox.com/scl/fi/fxjbzrn64eclsdbxgohka/ansible-automation-platform-setup-bundle-2.4-1.1-x86_64.tar?rlkey=wv5w5iip4hoz2fxbzmuwvjk41&dl=0'
-    installer_file_name: 'https://www.dropbox.com/scl/fi/fxjbzrn64eclsdbxgohka/ansible-automation-platform-setup-bundle-2.4-1.1-x86_64.tar'
+    installer_file_name: ansible-automation-platform-setup-bundle-2.4-1.1-x86_64.tar
     backup_tar_url: 'https://www.dropbox.com/scl/fi/x2ai7dzbtkclowvjoqt6x/ac_backup2023-10-25_version_2.4-1.tar.gz?rlkey=ao33mgq52aaszo6gqtk5wj39r&dl=0'
     backup_file_name: ac_backup2023-10-25_version_2.4-1.tar.gz #as it appears in dropbox
-    aap_version: '2-4.1'
-    rhel_os: "rhel_8"
+    aap_version: '2-4'
+    rhel_os: "rhel-8"
     bundle: "bundled" # options "bundled" or "not_bundled"
     install_dir: /root
 
   tasks:
+    - name: ensure aap repo installed
+      ansible.builtin.yum_repository:
+        name: ansible-automation-platform-{{aap_version}}-for-{{ rhel_os }}-x86_64-rpms
+        description: Ansible Automation Platform {{ aap_version}} on {{ rhel_os }} Repo
+
     - name: Ensure install directory exists
       ansible.builtin.file:
         path: "{{install_dir}}/installer-{{aap_version}}-{{bundle}}"
@@ -77,9 +82,3 @@
       args:
         chdir: "{{ install_dir }}"
       tags: download
-
-
-#    - name: download backup file
-#      get_url:
-#        url: "{{backup_tar_url}}"
-#        dest: "/root/install_aap_{{aap_version}}/"
