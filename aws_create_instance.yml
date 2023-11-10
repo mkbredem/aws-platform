@@ -44,7 +44,7 @@
         volumes:
           - device_name: /dev/xvda
             ebs:
-              volume_size: "{{ storage | default(50) }}"
+              volume_size: "{{ storage | default(20) }}"
               delete_on_termination: true
       loop: "{{ vm_names }}"
       when: image_name is match("rhel.*")
