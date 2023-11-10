@@ -13,9 +13,7 @@
 
   tasks:
     - name: ensure aap repo installed
-      ansible.builtin.yum_repository:
-        name: ansible-automation-platform-{{aap_version}}-for-{{ rhel_os }}-x86_64-rpms
-        description: Ansible Automation Platform {{ aap_version}} on {{ rhel_os }} Repo
+      command: subscription-manager repos --enable ansible-automation-platform-2.4-for-rhel-8-x86_64-rpms
 
     - name: Ensure install directory exists
       ansible.builtin.file:
