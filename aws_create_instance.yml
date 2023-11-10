@@ -98,10 +98,6 @@
           loop: "{{ec2_instance_facts_rhel.results}}"
           register: eips_from_info
 
-#        - name: give public dns time to convert to eip allocated
-#          ansible.builtin.wait_for: 
-#            timeout: 150
-
         - name: show eip instance structures
           debug:
             var: eips_from_info
@@ -137,6 +133,9 @@
           loop: "{{ ec2_instance_facts_rhel.results[0].instances }}"
       when: env_tag != "prod"  
     
+    - name: wait for server to initialize
+      ansible.builtin.wait_for: 
+        timeout: 150
 
     
     
