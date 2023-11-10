@@ -25,6 +25,7 @@
         username: "{{ lookup('env', 'PORTAL_USERNAME') }}"
         password: "{{ lookup('env', 'PORTAL_PASSWORD') }}"
         force_register: yes
+        consumer_name: "{{ name_tag }}"
         pool_ids: "{{ subscription[subscription_name]}}"
         # consider using activation key parameter instead (see examples in docs)
 
