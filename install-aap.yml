@@ -14,7 +14,8 @@
   tasks:
     - name: ensure aap repo installed
       command: subscription-manager repos --enable ansible-automation-platform-2.4-for-rhel-8-x86_64-rpms
-
+      # consider refactoring as module which will need to be added to EE
+      
     - name: Ensure install directory exists
       ansible.builtin.file:
         path: "{{install_dir}}/installer-{{aap_version}}-{{bundle}}"
