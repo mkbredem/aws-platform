@@ -1,6 +1,6 @@
 ---
 - name: Expand EBS Volume on EC2 Instance
-  hosts: localhost
+  hosts: aap_demo_controller
   gather_facts: no
 
   vars:
@@ -10,14 +10,22 @@
     add_size_gb: 100  # New size for the EBS volume in gigabytes
 
   tasks:
-    - name: gather running instance information
-      amazon.aws.ec2_instance_info:
-        region: "{{ aws_region }}"
-      register: ec2_instance_facts
+    - name: Resize filesystem
+      ansible.builtin.filesystem:
+        fstype: xfs  # or ext4, depending on your filesystem type
+        dev: /dev/nvme0n1p2
+        resizefs: yes
 
-    - name: show instance gather_facts
-      debug: 
-        vars: ec2_instance_facts
+##    - name: gather running instance information
+##      amazon.aws.ec2_instance_info:
+##        region: "{{ aws_region }}"
+##      register: ec2_instance_facts
+##
+##    - name: show instance gather_facts
+##      debug: 
+##        vars: ec2_instance_facts
+
+
     # - debug:  
     #     msg: "{{ item.public_dns_name }}"
     #   loop: "{{ ec2_instance_facts.instances }}"
