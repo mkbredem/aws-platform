@@ -71,13 +71,13 @@
       args:
         chdir: "{{install_dir}}/installer-{{aap_version}}-{{bundle}}"
 
-    - name: backup isntallation version to dropbox (needed for future restores)
-      ansible.builtin.shell: >
-        curl -X POST https://content.dropboxapi.com/2/files/upload 
-        --header "Authorization: Bearer {{ access_token }}"
-        --header "Dropbox-API-Arg: {\"path\": \"/Apps/Automation_Controller/{{tar.dest}}\",\"mode\": \"overwrite\",\"autorename\": true,\"mute\": false}" 
-        --header "Content-Type: application/octet-stream" 
-        --data-binary @{{tar.dest}}
-      args:
-        chdir: "{{ install_dir }}"
-      tags: download
+#    - name: backup isntallation version to dropbox (needed for future restores)
+#      ansible.builtin.shell: >
+#        curl -X POST https://content.dropboxapi.com/2/files/upload 
+#        --header "Authorization: Bearer {{ access_token }}"
+#        --header "Dropbox-API-Arg: {\"path\": \"/Apps/Automation_Controller/{{tar.dest}}\",\"mode\": \"overwrite\",\"autorename\": true,\"mute\": false}" 
+#        --header "Content-Type: application/octet-stream" 
+#        --data-binary @{{tar.dest}}
+#      args:
+#        chdir: "{{ install_dir }}"
+#      tags: download
