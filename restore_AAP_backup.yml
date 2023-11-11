@@ -51,7 +51,7 @@
         - name: restore postressql
           ansible.builtin.shell: ./setup.sh -e 'restore_backup_file={{install_dir}}{{backup_file_name}}' -r
           args:
-            chdir: "{{install_dir}}"
+            chdir: "{{install_dir}}/installer-{{aap_version}}-{{bundle}}"
           register: restore_output
       rescue:
         - name: show /var/log/tower/restore...log output
