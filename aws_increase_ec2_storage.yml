@@ -10,6 +10,11 @@
     add_size_gb: 100  # New size for the EBS volume in gigabytes
 
   tasks:
+    - name: Resize partition with growpart
+      ansible.builtin.command:
+        cmd: "growpart /dev/nvme0n1 2"
+      become: yes
+
     - name: Resize filesystem
       ansible.builtin.filesystem:
         fstype: xfs  # or ext4, depending on your filesystem type
