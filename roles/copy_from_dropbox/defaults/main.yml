@@ -1,0 +1,7 @@
+---
+# defaults file for copy_from_dropbox
+dest_dir: /root
+dest_file_name: db_file
+access_token: sl.BpoCXnQog9JZja47KTl9fRUZ3jwNHnWd7NzPwZ3k_m_4CelSIc0Sk8I0PBMF30F0jj2H3CAzg0jZTSHrp3MrFKJY-7yMbgSxuvedHoVfILFaGWVxO23lU6r0QWG6vaZi5zLMHLI3QElIoKYhqAhabWw
+db_path: /Apps/Automation_Controller
+db_file_name: ac_backup2023-10-25_version_2.4-1.tar.gz

@@ -1,0 +1,10 @@
+---
+# tasks file for copy_from_dropbox
+- name: download file from dropbox
+  ansible.builtin.shell: >
+    curl -o {{ dest_dir }}/{{dest_file_name}}   -X POST https://content.dropboxapi.com/2/files/download   
+    --header "Authorization: Bearer {{access_token}}"   
+    --header "Dropbox-API-Arg: {\"path\":\"{{db_path}}/{{db_file_name}}\"}"
+  args:
+    chdir: "{{destination_dir}}"
+  register: db_download
