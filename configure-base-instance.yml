@@ -1,6 +1,7 @@
 ---
 - name: Configure AWS EC2 Image to communicate with Insights via RHC
   hosts: "{{ target_hosts }}"
+  ignore_errors: true
   vars:
     subscription: 
       rhel_development_teams: 2c946cd0887328c30188a02782cf3b9e
