@@ -42,7 +42,7 @@
           operating_system: "RHEL"
           usage: "{{vpc_prefix}}demos"
         volumes:
-          - device_name: /dev/nvme0n1
+          - device_name: /dev/sda1
             ebs:
               volume_size: "{{ storage | default(20) }}"
               delete_on_termination: true
