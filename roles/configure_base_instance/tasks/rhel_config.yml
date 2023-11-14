@@ -54,7 +54,7 @@
         insights_tags:
           application: "{{ app_tag }}"
           environment: "{{ env_tag }}"
-          name: "{{ name_tag }}"
+          name: "{{ vm_names }}"
 
 #  - name: register system to insights
 #    insights-register:
