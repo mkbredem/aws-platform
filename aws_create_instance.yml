@@ -46,7 +46,7 @@
             ebs:
               volume_size: "{{ storage | default(20) }}"
               delete_on_termination: true
-      loop: "{{ vm_names }}"
+      loop: "{{ vm_names.split(',') }}"
       when: image_name is match("rhel.*")
       register: ec2_instance_facts_rhel
 
