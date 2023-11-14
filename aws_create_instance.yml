@@ -74,7 +74,7 @@
           environment: "{{ env }}"
           operating_system: "Windows"
           usage: "mbredemedemos"
-      loop: "{{ vm_names }}"
+      loop: "{{ vm_names.split(',') }}"
       when: image_name is match("win.*")
       register: ec2_instance_facts_win
 
