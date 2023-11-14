@@ -38,7 +38,7 @@
         tags:
           Name: "{{ item }}"
           owner: "{{ owner }}"
-          env: "{{ env }}"
+          env: "{{ env_tag }}"
           operating_system: "RHEL"
           usage: "{{vpc_prefix}}demos"
         volumes:
