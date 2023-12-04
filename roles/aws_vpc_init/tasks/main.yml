@@ -135,6 +135,8 @@
     name: AWS Key
     state: present
     kind: cloud
+    retries: 3  # Number of retries
+    delay: 10   # Delay between retries (in seconds)
     inputs:
       fields:
         - id: awsusername
