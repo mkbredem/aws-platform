@@ -95,11 +95,16 @@
           - 9090
         cidr_ip: 0.0.0.0/0
         rule_desc: allow all on port 9090
-      - proto: all
-        from_port: 0
-        to_port: 65635
+      - proto: tcp
+        ports:
+          - 5432
         cidr_ip: 0.0.0.0/0
-        rule_desc: allow all on any port
+        rule_desc: allow all on port 5432
+#      - proto: all
+#        from_port: 0
+#        to_port: 65635
+#        cidr_ip: 0.0.0.0/0
+#        rule_desc: allow all on any port
     tags:
       Name: "{{ _security_group_ }}"
   when: image_name is match("rhel.*")
