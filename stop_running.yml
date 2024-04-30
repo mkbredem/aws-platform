@@ -11,7 +11,7 @@
         region: "{{ aws_region }}"
         uptime: 1
         filters:
-          "tag:env": "Dev"
+          "tag:env": "dev"
           instance-state-name: [ "running" ]
       register: ec2_instance_facts
 
