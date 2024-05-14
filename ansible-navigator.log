@@ -1,0 +1,25 @@
+2024-03-06T14:44:15.819989+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' Image inspection failed, image assumed to be corrupted or missing
+2024-03-06T14:44:15.821318+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' stdout: 
+2024-03-06T14:44:15.821402+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' stderr: Cannot connect to Podman. Please verify your connection to the Linux system using `podman system connection list`, or try `podman machine init` and `podman machine start` to manage a new Linux VM
+Error: unable to connect to Podman socket: Get "http://d/v4.8.2/libpod/_ping": dial unix /var/folders/g8/6hwgxw_s0xg9vg_40d1mmnj80000gn/T/podman-run--1/podman/podman.sock: connect: no such file or directory
+
+2024-03-06T14:44:16.463041+00:00 ERROR 'ansible_navigator.image_manager.puller._log_message' Execution environment pull failed
+2024-03-06T14:46:55.734428+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' Image inspection failed, image assumed to be corrupted or missing
+2024-03-06T14:46:55.735701+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' stdout: 
+2024-03-06T14:46:55.735802+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' stderr: Cannot connect to Podman. Please verify your connection to the Linux system using `podman system connection list`, or try `podman machine init` and `podman machine start` to manage a new Linux VM
+Error: unable to connect to Podman socket: Get "http://d/v4.8.2/libpod/_ping": dial unix /var/folders/g8/6hwgxw_s0xg9vg_40d1mmnj80000gn/T/podman-run--1/podman/podman.sock: connect: no such file or directory
+
+2024-03-06T14:46:56.377891+00:00 ERROR 'ansible_navigator.image_manager.puller._log_message' Execution environment pull failed
+2024-03-06T14:46:57.129742+00:00 ERROR 'ansible_navigator.actions.images._collect_image_list' Cannot connect to Podman. Please verify your connection to the Linux system using `podman system connection list`, or try `podman machine init` and `podman machine start` to manage a new Linux VM
+Error: unable to connect to Podman socket: Get "http://d/v4.8.2/libpod/_ping": dial unix /var/folders/g8/6hwgxw_s0xg9vg_40d1mmnj80000gn/T/podman-run--1/podman/podman.sock: connect: no such file or directory
+
+2024-03-06T14:46:58.896671+00:00 ERROR 'ansible_navigator.actions.images.run' No images were found, or the configured container engine was not available.
+2024-03-06T14:47:05.047580+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' Image inspection failed, image assumed to be corrupted or missing
+2024-03-06T14:47:05.048680+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' stdout: 
+2024-03-06T14:47:05.048762+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' stderr: Cannot connect to Podman. Please verify your connection to the Linux system using `podman system connection list`, or try `podman machine init` and `podman machine start` to manage a new Linux VM
+Error: unable to connect to Podman socket: Get "http://d/v4.8.2/libpod/_ping": dial unix /var/folders/g8/6hwgxw_s0xg9vg_40d1mmnj80000gn/T/podman-run--1/podman/podman.sock: connect: no such file or directory
+
+2024-03-06T14:47:05.696202+00:00 ERROR 'ansible_navigator.image_manager.puller._log_message' Execution environment pull failed
+2024-03-06T14:47:06.436852+00:00 ERROR 'ansible_navigator.actions.images._collect_image_list' Cannot connect to Podman. Please verify your connection to the Linux system using `podman system connection list`, or try `podman machine init` and `podman machine start` to manage a new Linux VM
+Error: unable to connect to Podman socket: Get "http://d/v4.8.2/libpod/_ping": dial unix /var/folders/g8/6hwgxw_s0xg9vg_40d1mmnj80000gn/T/podman-run--1/podman/podman.sock: connect: no such file or directory
+
