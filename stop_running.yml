@@ -25,3 +25,4 @@
         instance_ids: "{{ item.instance_id }}"
         state: stopped
       loop: "{{ ec2_instance_facts.instances }}"
+      
