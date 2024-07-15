@@ -55,3 +55,4 @@ _key_name_: "{{ vpc_prefix}}key"
 _instance_type_: "t2.micro"
 image_name: "rhel88"
 owner: mbredeme
+subscription_name: 
