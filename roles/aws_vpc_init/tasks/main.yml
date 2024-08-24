@@ -111,7 +111,7 @@
 
 - name: what is image_name
   debug:
-    vars: "{{ image_name }}"
+    var: "{{ image_name }}"
 
 - name: AWS Create EC2 Security Group for Windows
   amazon.aws.ec2_security_group:
