@@ -120,7 +120,7 @@
     - name: set target hosts IPs for non-prod serverse
       block:        
         - name: load Windows instances into target_hosts list (used in future plays for config)
-          when: image_name == "windows2019" 
+          when: image_name == "Windows2019" 
           set_stats:
             data: 
               target_hosts: "{{ target_hosts + [ item.public_dns_name ] }}"
