@@ -11,7 +11,7 @@
       ansible.builtin.set_fact:
         _image_id_: 'ami-0a8128f5266cdc447' #windows 2019 base 64-bit
         #_image_id_: 'ami-04b707657b5bf6b20'
-      when: image_name is match("win*")
+      when: image_name is match("Win*")
     
     - name: Change image ID if running RHEL8
       ansible.builtin.set_fact:
@@ -76,7 +76,7 @@
           operating_system: "Windows"
           usage: "mbredemedemos"
       loop: "{{ vm_names.split(',') }}"
-      when: image_name is match("win.*")
+      when: image_name is match("Win.*")
       register: ec2_instance_facts_win
 
     - name: initialize target_hosts as an empty list/array
