@@ -109,6 +109,10 @@
       Name: "{{ _security_group_ }}"
   when: image_name is match("rhel.*")
 
+- name: what is image_name
+  debug:
+    vars: "{{ image_name }}"
+
 - name: AWS Create EC2 Security Group for Windows
   amazon.aws.ec2_security_group:
     name: "{{ _security_group_ }}_Windows"
