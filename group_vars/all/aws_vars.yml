@@ -4,16 +4,16 @@ ami_id:
     rhel86: ami-03debf3ebf61b20cd
     rhel88: ami-046981daef262e1d8
     rhel92: ami-093e0758ef99ec8a4
-    windows2019: ami-04b707657b5bf6b20 # EC2LaunchV2-Windows_Server-2019-English-Full-Base-2023.06.14
+    Windows2019: ami-04b707657b5bf6b20 # EC2LaunchV2-Windows_Server-2019-English-Full-Base-2023.06.14
     fedora36: ami-0e8125571ebaa4000
   us-east-2:
     rhel86: ami-0251f146af87abba4
     rhel92: ami-0c5cbb3977cbe4a24
-    windows2019: ami-017ab573701202ba1
+    Windows2019: ami-017ab573701202ba1
     fedora36: ami-00a5a17c57aea0e46
   us-west-1:
     rhel86: ami-0761d0d4bf33910e9
-    windows2019: 
+    Windows2019: 
     fedora36:    
 instance_size: m4.xlarge
 # ssh_key_name: ansible-ssa-demo-key-20230621
