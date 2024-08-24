@@ -2,7 +2,7 @@
   when: '"rhel" in image_name'
 
 - include_tasks: windows_config.yml
-  when: image_name == "windows2019"
+  when: image_name == "Windows2019"
 
 - include_tasks: windows_config.yml
   when: '"fedora" in image_name'
