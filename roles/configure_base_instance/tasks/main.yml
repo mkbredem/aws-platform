@@ -1,9 +1,9 @@
 - name: show platform_details
   debug:
-    var: ansible_platform_details
+    var: platform_details
 
 - include_tasks: rhel_config.yml
-  when: ansible_platform_details == "Red Hat BYOL Linux"
+  when: platform_details == "Red Hat BYOL Linux"
   #when: '"rhel" in image_name'
 
 - include_tasks: windows_config.yml
