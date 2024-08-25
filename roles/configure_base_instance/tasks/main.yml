@@ -1,10 +1,5 @@
-- name: show platform_details
-  debug:
-    var: platform_details
-
 - include_tasks: rhel_config.yml
   when: platform_details == "Red Hat BYOL Linux"
-  #when: '"rhel" in image_name'
 
 - include_tasks: windows_config.yml
   when: platform_details == "Windows"
@@ -13,4 +8,4 @@
   when: '"fedora" in image_name'
 
 - include_tasks: graphical_interface.yml
-  when: (graphical_interface == true)  and ('"rhel8" in image_name')
+  when: (graphical_interface == true)  and (platform_details == "Red Hat BYOL Linux")
