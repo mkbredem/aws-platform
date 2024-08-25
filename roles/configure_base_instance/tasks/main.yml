@@ -7,7 +7,7 @@
   #when: '"rhel" in image_name'
 
 - include_tasks: windows_config.yml
-  when: ansible_platform == "windows"
+  when: platform_details == "Windows"
 
 - include_tasks: windows_config.yml
   when: '"fedora" in image_name'
