@@ -135,6 +135,11 @@
           - 443
         cidr_ip: 0.0.0.0/0
         rule_desc: allow all on port 443
+      - proto: rdp
+        ports:
+          - 3389
+        cidr_ip: 0.0.0.0/0
+        rule_desc: allow all on port 3389
     tags:
       Name: "{{ _security_group_ }}"
   when: image_name is match("Win.*")
