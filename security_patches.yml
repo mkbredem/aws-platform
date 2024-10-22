@@ -8,12 +8,13 @@
         name: '*'
         security: yes
         state: latest
-      when: ansible_distribution_version == "8.4"
+#      when: ansible_distribution_version == "8.4"
 
-- name: refresh red hat insights data 
-  hosts: all
-  tasks:  
-    - name: update insights data
-      ansible.builtin.command: insights-client
-      ignore_errors: yes
+#- name: refresh red hat insights data 
+#  hosts: all
+#  tasks:  
+#    - name: update insights data
+#      ansible.builtin.command: insights-client
+#      ignore_errors: yes
+
       
