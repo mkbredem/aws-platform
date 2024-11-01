@@ -92,3 +92,8 @@
         update_password: always
         #PORTAL_USERNAME and PORTAL_PASSWORD are defined as custom credential
 
+    - name: Ensure {{ lookup('env', 'PORTAL_USERNAME') }} has passwordless sudo access
+      copy:
+        dest: "/etc/sudoers.d/{{ lookup('env', 'PORTAL_USERNAME') }}"
+        content: "{{ lookup('env', 'PORTAL_USERNAME') }} ALL=(ALL) NOPASSWD:ALL\n"
+        mode: '0440'
