@@ -1,7 +1,11 @@
 ---
 - name: Pinging hosts
-  hosts: all
+  hosts: "{{ target_host }}"
 
   tasks:
+    - name: what is the hostname
+      debug:
+        var: inventory_hostname
+
     - name: ping hosts
       ping:
