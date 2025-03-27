@@ -1,0 +1,8 @@
+## NCCI Ansible Role Runner
+---
+- name: Ansible Roles
+  hosts: ANSIBLE_{{ tag }}_{{ ncci_env }}
+  become: true
+  remote_user: admin
+  roles:
+    - { role: "{{ role }}" }
