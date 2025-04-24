@@ -1,0 +1,32 @@
+---
+- name: No-op playbook that runs for ~10 minutes
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Print start message
+      ansible.builtin.debug:
+        msg: "Starting a 10-minute no-op playbook..."
+
+    - name: Pause 2 minutes - Step 1 of 5
+      ansible.builtin.pause:
+        minutes: 2
+
+    - name: Pause 2 minutes - Step 2 of 5
+      ansible.builtin.pause:
+        minutes: 2
+
+    - name: Pause 2 minutes - Step 3 of 5
+      ansible.builtin.pause:
+        minutes: 2
+
+    - name: Pause 2 minutes - Step 4 of 5
+      ansible.builtin.pause:
+        minutes: 2
+
+    - name: Pause 2 minutes - Step 5 of 5
+      ansible.builtin.pause:
+        minutes: 2
+
+    - name: Print end message
+      ansible.builtin.debug:
+        msg: "Completed the no-op playbook after ~10 minutes."
