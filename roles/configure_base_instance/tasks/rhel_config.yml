@@ -19,14 +19,22 @@
     - name: clear subscription-manager meta information
       ansible.builtin.command: subscription-manager clean
 
-    - name: register system and attach rhel subscription
-      community.general.redhat_subscription:
+    - name: Register as user (joe_user) with password (somepass) and auto-subscribe to available content.
+      redhat.rhel_system_roles.redhat_subscription:
         state: present
         username: "{{ lookup('env', 'PORTAL_USERNAME') }}"
         password: "{{ lookup('env', 'PORTAL_PASSWORD') }}"
-        force_register: yes
         consumer_name: "{{ name_tag }}"
-        pool_ids: "{{ subscription[subscription_name]}}"
+        auto_attach: true
+
+#    - name: register system and attach rhel subscription
+#      community.general.redhat_subscription:
+#        state: present
+#        username: "{{ lookup('env', 'PORTAL_USERNAME') }}"
+#        password: "{{ lookup('env', 'PORTAL_PASSWORD') }}"
+#        force_register: yes
+#        consumer_name: "{{ name_tag }}"
+#        pool_ids: "{{ subscription[subscription_name]}}"
         # consider using activation key parameter instead (see examples in docs)
 
     - name: make subscription-manager the default repo manager
