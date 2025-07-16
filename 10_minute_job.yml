@@ -30,3 +30,4 @@
     - name: Print end message
       ansible.builtin.debug:
         msg: "Completed the no-op playbook after ~10 minutes."
+
