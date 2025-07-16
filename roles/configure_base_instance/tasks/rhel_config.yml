@@ -51,9 +51,9 @@
           login:
             username: "{{ lookup('env', 'PORTAL_USERNAME') }}"
             password: "{{ lookup('env', 'PORTAL_PASSWORD') }}"
-          activation_keys: 
-            keys:
-              - rhc_connector
+#          activation_keys: 
+#            keys:
+#              - rhc_connector
 
     - name: install and configure insights insights-client
       include_role:
