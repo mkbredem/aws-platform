@@ -44,6 +44,9 @@
       include_role:
         name: redhat.rhel_system_roles.rhc
       vars:
+        rhc_insights:
+          autoupdate: false
+          remediation: absent
         activationKey: rhc_connector
         rhc_auth:
           login:
