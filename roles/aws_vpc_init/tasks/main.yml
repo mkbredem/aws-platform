@@ -175,13 +175,13 @@
     region: "{{ _region_ }}"
   register: awsec2key
 
-- name: Update SSH key in controller    # noqa: no-handler
-  ansible.controller.credential:
-    name: "AWS {{ _key_name_ }}"
-    state: present
-    credential_type: "Machine"
-    organization: Default
-    inputs:
-      ssh_key_data: "{{ awsec2key.key.private_key }}"
-      username: "ec2-user"
-  when: awsec2key.changed
+#- name: Update SSH key in controller    # noqa: no-handler
+#  ansible.controller.credential:
+#    name: "AWS {{ _key_name_ }}"
+#    state: present
+#    credential_type: "Machine"
+#    organization: Default
+#    inputs:
+#      ssh_key_data: "{{ awsec2key.key.private_key }}"
+#      username: "ec2-user"
+#  when: awsec2key.changed
