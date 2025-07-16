@@ -40,17 +40,17 @@
     - name: make subscription-manager the default repo manager
       ansible.builtin.shell: subscription-manager config --rhsm.manage_repos=1
 
-    - name: Register systems to RHC
-      include_role:
-        name: redhat.rhel_system_roles.rhc
-      vars:
-        rhc_insights:
-          autoupdate: false
-          remediation: absent
-        rhc_auth:
-          login:
-            username: "{{ lookup('env', 'PORTAL_USERNAME') }}"
-            password: "{{ lookup('env', 'PORTAL_PASSWORD') }}"
+#    - name: Register systems to RHC
+#      include_role:
+#        name: redhat.rhel_system_roles.rhc
+#      vars:
+#        rhc_insights:
+#          autoupdate: false
+#          remediation: absent
+#        rhc_auth:
+#          login:
+#            username: "{{ lookup('env', 'PORTAL_USERNAME') }}"
+#            password: "{{ lookup('env', 'PORTAL_PASSWORD') }}"
 #          activation_keys: 
 #            keys:
 #              - rhc_connector
