@@ -63,20 +63,11 @@
         redhat_portal_username: "{{ lookup('env', 'PORTAL_USERNAME') }}"
         redhat_portal_password: "{{ lookup('env', 'PORTAL_PASSWORD') }}"
       # provided via survey
-      #  insights_display_name: "{{ name_tag }}"
+      # insights_display_name: "{{ name_tag }}"
         insights_tags:
           application: "{{ app_tag }}"
           environment: "{{ env_tag }}"
           name: "{{ vm_names }}"
-
-#  - name: register system to insights
-#    insights-register:
-#      state: present
-#      display-name: "{{ name_tag }}"
-
-#  - name: update insights data
-#    ansible.builtin.command: insights-client
-#    ignore_errors: yes
 
     - name: install webconsole aka cockpit
       ansible.builtin.yum:
