@@ -47,7 +47,7 @@
             ebs:
               volume_size: "{{ storage | default(20) }}"
               delete_on_termination: true
-      loop: "{{ vm_names.split(',') }}"
+      loop: "{{ vm_names | lower | split(',') }}"
       when: image_name is match("rhel.*")
       register: ec2_instance_facts_rhel
 
@@ -75,7 +75,7 @@
           environment: "{{ env_tag }}"
           operating_system: "Windows"
           usage: "mbredemedemos"
-      loop: "{{ vm_names.split(',') }}"
+      loop: "{{ vm_names | lower | split(',') }}"
       when: image_name is match("Win.*")
       register: ec2_instance_facts_win
 
