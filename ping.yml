@@ -10,3 +10,6 @@
     - name: ping hosts
       ping:
 
+    - name: show text area data
+      debug:
+        var: text_box_stuff
