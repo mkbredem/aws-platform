@@ -13,3 +13,8 @@
     - name: show text area data
       debug:
         var: text_box_stuff
+
+    - name: text box stuff as an array
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ text_box_stuff.splitlines() }}"
