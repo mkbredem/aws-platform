@@ -9,7 +9,7 @@
       password: "{{ lookup('env', 'SATELLITE_PASSWORD') }}"
       validate_certs: "{{ lookup('env', 'SATELLITE_VALIDATE_CERTS') }}"
 #      validate_certs: No
-    organization: Default
+    organization: Default Organization
 #    lifecycle_environment: "{{ content_view }}_{{ env }}"
 #    content_view: undef
     publish_timeout: 14400
@@ -32,7 +32,7 @@
       password: "{{ lookup('env', 'SATELLITE_PASSWORD') }}"
       validate_certs: false
       name: "Test RHEL7"
-      organization: "Default"
+      organization: "Default Organization"
       repositories:
         - name: 'Red Hat Enterprise Linux 7 Server - Extras (RPMs)'
           product: 'Red Hat Enterprise Linux Server'
