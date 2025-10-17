@@ -48,8 +48,8 @@
       lifecycle_environments: 
         - "Library"
 #      force_promote: true
-    async: "{{ publish_timeout }}"
-    poll: 0
+#    async: "{{ publish_timeout }}"
+#    poll: 0
     register: publish_async
 
 #  - name: Check if content view  is finished
