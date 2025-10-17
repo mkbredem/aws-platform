@@ -17,6 +17,14 @@
 
   tasks:
 
+  - name: Show creds
+    debug:
+      msg:
+        - "server_url: {{ lookup('env', 'SATELLITE_SERVER_URL') }}"
+        - "username: {{ lookup('env', 'SATELLITE_USERNAME') }}"
+        - "password: {{ lookup('env', 'SATELLITE_PASSWORD') }}"
+        - "validate_certs: {{ lookup('env', 'SATELLITE_VALIDATE_CERTS') }}"
+
   - name: "Create or update content view"
     redhat.satellite.content_view:
       server_url: "{{ lookup('env', 'SATELLITE_SERVER_URL') }}"
