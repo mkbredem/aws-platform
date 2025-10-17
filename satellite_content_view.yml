@@ -32,21 +32,24 @@
       password: "{{ lookup('env', 'SATELLITE_PASSWORD') }}"
       validate_certs: false
       name: "Test RHEL7"
-      organization: "Default Organization"
+      organization: "{{ organization }}"
       repositories:
         - name: 'Red Hat Enterprise Linux 7 Server - Extras RPMs x86_64'
           product: 'Red Hat Enterprise Linux Server'
 
-#  - name: Publish Content View
-#    redhat.satellite.content_view_version:
-#     <<: *login
-#      content_view: "Test RHEL7"
-#      organization: "Default"
+  - name: Publish Content View
+    redhat.satellite.content_view_version:
+      server_url: "{{ lookup('env', 'SATELLITE_SERVER_URL') }}"
+      username: "{{ lookup('env', 'SATELLITE_USERNAME') }}"
+      password: "{{ lookup('env', 'SATELLITE_PASSWORD') }}"
+      validate_certs: false
+      content_view: "Test RHEL7"
+      organization: "{{ organization }}"
 #      lifecycle_environments: "{{ lifecycle_environment }}"
 #      force_promote: true
-#    async: "{{ publish_timeout }}"
-#    poll: 0
-#    register: publish_async
+    async: "{{ publish_timeout }}"
+    poll: 0
+    register: publish_async
 
 #  - name: Check if content view  is finished
 #    async_status:
