@@ -9,9 +9,9 @@
 #      password: "{{ lookup('env', 'SATELLITE_PASSWORD') }}"
 #      validate_certs: "{{ lookup('env', 'SATELLITE_VALIDATE_CERTS') }}"
 #      validate_certs: No
-    organization: Baptist Health
+    organization: Default
 #    lifecycle_environment: "{{ content_view }}_{{ env }}"
-    content_view: undef
+#    content_view: undef
     publish_timeout: 14400
     publish_retry_interval: 15
 
