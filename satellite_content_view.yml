@@ -45,7 +45,8 @@
       validate_certs: false
       content_view: "Test RHEL7"
       organization: "{{ organization }}"
-      lifecycle_environments: "Library"
+      lifecycle_environments: 
+        - "Library"
 #      force_promote: true
     async: "{{ publish_timeout }}"
     poll: 0
