@@ -19,7 +19,10 @@
 
   - name: "Create or update content view"
     redhat.satellite.content_view:
-     <<: *login
+      server_url: "{{ lookup('env', 'SATELLITE_SERVER_URL') }}"
+      username: "{{ lookup('env', 'SATELLITE_USERNAME') }}"
+      password: "{{ lookup('env', 'SATELLITE_PASSWORD') }}"
+      validate_certs: "{{ lookup('env', 'SATELLITE_VALIDATE_CERTS') }}"
       name: "Test RHEL7"
       organization: "Default"
       repositories:
