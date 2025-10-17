@@ -19,7 +19,7 @@
 
   - name: "Create or update content view"
     redhat.satellite.content_view:
-    <<: *login
+     <<: *login
       name: "Test RHEL7"
       organization: "Default"
       repositories:
