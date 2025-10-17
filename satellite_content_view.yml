@@ -1,0 +1,49 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+#    login: &login
+#      server_url: "{{ lookup('env', 'SATELLITE_SERVER_URL') }}"
+#      username: "{{ lookup('env', 'SATELLITE_USERNAME') }}"
+#      password: "{{ lookup('env', 'SATELLITE_PASSWORD') }}"
+#      validate_certs: "{{ lookup('env', 'SATELLITE_VALIDATE_CERTS') }}"
+#      validate_certs: No
+    organization: Baptist Health
+#    lifecycle_environment: "{{ content_view }}_{{ env }}"
+    content_view: undef
+    publish_timeout: 14400
+    publish_retry_interval: 15
+
+  tasks:
+
+  - name: "Create or update content view"
+    redhat.satellite.content_view:
+#      username: "admin"
+#      password: "changeme"
+#      server_url: "https://satellite.example.com"
+      name: "Test RHEL7"
+      organization: "Default"
+      repositories:
+        - name: 'Red Hat Enterprise Linux 7 Server - Extras (RPMs)'
+          product: 'Red Hat Enterprise Linux Server'
+
+#  - name: Publish Content View
+#    redhat.satellite.content_view_version:
+#     <<: *login
+#      content_view: "Test RHEL7"
+#      organization: "Default"
+#      lifecycle_environments: "{{ lifecycle_environment }}"
+#      force_promote: true
+#    async: "{{ publish_timeout }}"
+#    poll: 0
+#    register: publish_async
+
+#  - name: Check if content view  is finished
+#    async_status:
+#      jid: "{{ publish_async.ansible_job_id }}"
+#    register: job_result
+#    until: job_result.finished
+#    retries: "{{ ( publish_timeout / publish_retry_interval ) | int }}"
+#    delay: "{{ publish_retry_interval }}"
+...
