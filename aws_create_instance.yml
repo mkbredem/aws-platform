@@ -7,21 +7,21 @@
     - name: aws_vpc_init
 
   tasks:
-    - name: Change image ID if running Windows
+#    - name: Change image ID if running Windows
+#      ansible.builtin.set_fact:
+#        _image_id_: 'ami-0a8128f5266cdc447' #windows 2019 base 64-bit
+#        #_image_id_: 'ami-04b707657b5bf6b20'
+#      when: image_name is match("Win*")
+
+#    - name: Change image ID if running RHEL8
+#      ansible.builtin.set_fact:
+#        _image_id_: 'ami-046981daef262e1d8'
+#      when: image_name == "rhel88"
+
+    - name: Set image ID
       ansible.builtin.set_fact:
-        _image_id_: 'ami-0a8128f5266cdc447' #windows 2019 base 64-bit
-        #_image_id_: 'ami-04b707657b5bf6b20'
-      when: image_name is match("Win*")
-    
-    - name: Change image ID if running RHEL8
-      ansible.builtin.set_fact:
-        _image_id_: 'ami-046981daef262e1d8'
-      when: image_name == "rhel88"
-    
-    - name: Change image ID if running RHEL9
-      ansible.builtin.set_fact:
-        _image_id_: 'ami-093e0758ef99ec8a4'
-      when: image_name == "rhel92"
+        _image_id_: ami_id.{{ _region_ }}.{{ image_name }} #check group_vars/all/aws_vars.yml for ami_id's
+#      when: image_name == "rhel94"
 
     - name: Create EC2 instance with public IP for RHEL
       amazon.aws.ec2_instance:
@@ -47,7 +47,7 @@
             ebs:
               volume_size: "{{ storage | default(20) }}"
               delete_on_termination: true
-      loop: "{{ vm_names | lower | split(',') }}"
+      loop: "{{ vm_names }}"  #if vm_naes a string ~ "{{ vm_names | lower | split(',') }}"
       when: image_name is match("rhel.*")
       register: ec2_instance_facts_rhel
 
