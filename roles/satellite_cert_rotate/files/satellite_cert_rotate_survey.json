@@ -1,0 +1,69 @@
+{
+  "name": "Satellite TLS certificate rotation",
+  "description": "Unsupported content, run at your own risk. satellite-installer restarts Satellite services: no web UI, no content delivery, no remote execution while it runs. Do not run outside an approved change window.",
+  "spec": [
+    {
+      "question_name": "Satellite version",
+      "question_description": "Selects the Capsule installer flags. 6.16 and 6.17 also pass --foreman-proxy-register-in-foreman.",
+      "variable": "satellite_cert_rotate_version",
+      "type": "multiplechoice",
+      "choices": "6.16\n6.17\n6.18\n6.19",
+      "default": "6.18",
+      "required": true
+    },
+    {
+      "question_name": "Validate only (katello-certs-check, no changes)",
+      "question_description": "true runs the certificate validation on the Satellite and stops. Nothing is restarted.",
+      "variable": "satellite_cert_rotate_validate_only",
+      "type": "multiplechoice",
+      "choices": "true\nfalse",
+      "default": "true",
+      "required": true
+    },
+    {
+      "question_name": "I accept that Satellite services will restart and be unavailable",
+      "question_description": "Required before anything is deployed. Content delivery, the web UI, and remote execution are down for the duration of each installer run.",
+      "variable": "satellite_cert_rotate_accept_downtime",
+      "type": "multiplechoice",
+      "choices": "false\ntrue",
+      "default": "false",
+      "required": true
+    },
+    {
+      "question_name": "Allow the certificate authority to change",
+      "question_description": "Only select true if the new CA has ALREADY been deployed to every registered host and Capsule. Otherwise those hosts lose their connection to Satellite.",
+      "variable": "satellite_cert_rotate_accept_ca_change",
+      "type": "multiplechoice",
+      "choices": "false\ntrue",
+      "default": "false",
+      "required": true
+    },
+    {
+      "question_name": "Skip servers already serving this certificate",
+      "question_description": "Compared by serial number. false forces a redeployment, which restarts services even when nothing changes.",
+      "variable": "satellite_cert_rotate_skip_if_current",
+      "type": "multiplechoice",
+      "choices": "true\nfalse",
+      "default": "true",
+      "required": true
+    },
+    {
+      "question_name": "Satellite base URL",
+      "question_description": "URL Capsules use to reach the Satellite Server, for example https://satellite.example.com.",
+      "variable": "satellite_cert_rotate_foreman_base_url",
+      "type": "text",
+      "default": "",
+      "required": false
+    },
+    {
+      "question_name": "Installer time limit (seconds)",
+      "question_description": "Hard limit for a single satellite-installer run. Raise it for large deployments.",
+      "variable": "satellite_cert_rotate_installer_timeout",
+      "type": "integer",
+      "default": 5400,
+      "min": 600,
+      "max": 21600,
+      "required": false
+    }
+  ]
+}

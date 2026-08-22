@@ -1,0 +1,48 @@
+---
+# =============================================================================
+# rotate_satellite_certs.yml
+#
+# Rotate or renew custom TLS certificates on Red Hat Satellite Server and
+# Capsule Servers.
+#
+# UNSUPPORTED CONTENT. An illustration of what this automation could look like.
+# Not a Red Hat product. Not supported by Red Hat, any Red Hat employee, or the
+# author. Not validated against all environments. Run at your own risk. See
+# roles/satellite_cert_rotate/README.md.
+#
+# CAVEATS
+#   * You will take an outage on every server touched. satellite-installer
+#     restarts httpd, foreman, dynflow, pulpcore and others: no web UI, no
+#     content delivery, no remote execution while it runs. Commonly 10-30
+#     minutes per server.
+#   * Run this from a workstation or from an Ansible Automation Platform
+#     cluster that does not depend on the Satellite being rotated.
+#   * Changing the certificate authority breaks every registered host until
+#     the new CA is deployed to them. The role refuses to proceed on a CA
+#     change unless satellite_cert_rotate_accept_ca_change=true.
+#   * Nothing runs until satellite_cert_rotate_accept_downtime=true. Use
+#     satellite_cert_rotate_validate_only=true for a katello-certs-check dry
+#     run.
+#
+# Order matters: the Satellite Server is rotated first, then Capsules one at a
+# time, because Capsule certificates are generated on the Satellite.
+# =============================================================================
+
+- name: Rotate the Red Hat Satellite Server certificate
+  hosts: "{{ satellite_cert_rotate_satellite_group | default('satellite') }}"
+  gather_facts: true
+  any_errors_fatal: true
+
+  roles:
+    - role: satellite_cert_rotate
+      satellite_cert_rotate_component: satellite
+
+- name: Rotate the Red Hat Capsule Server certificates
+  hosts: "{{ satellite_cert_rotate_capsule_group | default('capsules') }}"
+  gather_facts: true
+  serial: 1
+  any_errors_fatal: true
+
+  roles:
+    - role: satellite_cert_rotate
+      satellite_cert_rotate_component: capsule

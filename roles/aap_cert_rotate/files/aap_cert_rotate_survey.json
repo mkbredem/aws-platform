@@ -1,6 +1,6 @@
 {
   "name": "AAP TLS certificate rotation",
-  "description": "Unsupported content. Rotating platform certificates restarts Ansible Automation Platform services. Launch this from a management cluster, never from the platform being rotated.",
+  "description": "Unsupported content, run at your own risk. Rotating platform certificates restarts Ansible Automation Platform services. Launch this from a management cluster, never from the platform being rotated.",
   "spec": [
     {
       "question_name": "Installation type",

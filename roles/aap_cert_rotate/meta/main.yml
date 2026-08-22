@@ -5,7 +5,8 @@ galaxy_info:
   description: >-
     Rotate or renew the TLS certificates used by Red Hat Ansible Automation
     Platform on container-based, operator-based, and RPM-based installations.
-    Unsupported community content - see README.md.
+    Unsupported content, provided as an illustration only and run at your own
+    risk - see README.md.
   company: unaffiliated
   license: MIT
   min_ansible_version: "2.16"

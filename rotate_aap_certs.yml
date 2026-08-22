@@ -5,9 +5,9 @@
 # Rotate or renew the TLS certificates used by Red Hat Ansible Automation
 # Platform (container-based, operator-based, or RPM-based).
 #
-# UNSUPPORTED CONTENT. This playbook and the aap_cert_rotate role are not a Red
-# Hat product, are not supported by Red Hat or any Red Hat employee, and have
-# not been validated against all environments. See
+# UNSUPPORTED CONTENT. An illustration of what this automation could look like.
+# Not a Red Hat product. Not supported by Red Hat, any Red Hat employee, or the
+# author. Not validated against all environments. Run at your own risk. See
 # roles/aap_cert_rotate/README.md.
 #
 # CAVEATS

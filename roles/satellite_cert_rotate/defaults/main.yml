@@ -1,0 +1,112 @@
+---
+# =============================================================================
+# satellite_cert_rotate - default variables
+#
+# UNSUPPORTED CONTENT. An illustration of what this automation could look like.
+# Not a Red Hat product. Not supported by Red Hat, any Red Hat employee, or the
+# author. Not validated against all Satellite versions or topologies. Run at
+# your own risk. Read README.md first.
+# =============================================================================
+
+# --- What is being rotated ---------------------------------------------------
+# satellite | capsule
+# Set per host, normally from group_vars: satellite hosts get 'satellite',
+# Capsule hosts get 'capsule'.
+satellite_cert_rotate_component: satellite
+
+# Inventory hostname of the Satellite Server. Required for the Capsule path:
+# katello-certs-check and capsule-certs-generate both run on the Satellite.
+satellite_cert_rotate_satellite_host: ""
+
+# Base URL a Capsule uses to reach the Satellite. Required by the Capsule
+# installer command in 6.16 through 6.19.
+satellite_cert_rotate_foreman_base_url: ""
+
+# Satellite version, used to decide which Capsule installer flags apply.
+# 6.16 and 6.17 also need --foreman-proxy-register-in-foreman "true";
+# 6.18 and later do not.
+satellite_cert_rotate_version: "6.18"
+
+# --- Certificate material ----------------------------------------------------
+# Paths on the Ansible control node (or in the project directory when launched
+# from automation controller). The certificate must carry X.509 v3 Key Usage
+# and Extended Key Usage extensions, and its CN must match the FQDN of the
+# server it is for, or katello-certs-check rejects it.
+satellite_cert_rotate_cert: ""
+satellite_cert_rotate_key: ""
+satellite_cert_rotate_ca_bundle: ""
+
+# Directory the certificate material is staged into on the target servers.
+# These files are NOT cleaned up: Satellite requires them for later upgrades.
+satellite_cert_rotate_dir: /root/satellite_cert_rotate
+
+# Directory on the Satellite where Capsule tar archives are generated, and on
+# the Capsule where the archive is deployed from. Also retained for upgrades.
+satellite_cert_rotate_capsule_tar_dir: /root/capsule_certs
+
+# Scratch directory on the Ansible control node (or inside the execution
+# environment) used to relay the Capsule certificate archive from the Satellite
+# to the Capsule. The archive contains the Capsule's private key, so this
+# should be a private directory on a host you trust; the copy is left behind
+# on the control node only for the life of the job when run from an execution
+# environment.
+satellite_cert_rotate_fetch_dir: /tmp
+
+# --- Safety interlocks -------------------------------------------------------
+# satellite-installer restarts Satellite services. Nothing runs until this is
+# explicitly set true.
+satellite_cert_rotate_accept_downtime: false
+
+# Validate only: run katello-certs-check and stop before any change.
+satellite_cert_rotate_validate_only: false
+
+# Skip a host that is already serving the certificate being deployed, compared
+# by serial number. Makes re-runs safe; the installer itself is not idempotent
+# and restarts services every time.
+satellite_cert_rotate_skip_if_current: true
+
+# Refuse to proceed when the new certificate is issued by a different CA than
+# the one the host currently serves. Changing the CA breaks every registered
+# host until the new CA is deployed to them. See README.md.
+satellite_cert_rotate_accept_ca_change: false
+
+# Refuse to start when another satellite-installer or satellite-maintain
+# process is already running on the target.
+satellite_cert_rotate_check_concurrent_installer: true
+
+# --- Installer behavior ------------------------------------------------------
+# Hard time limit for a satellite-installer run, in seconds.
+satellite_cert_rotate_installer_timeout: 5400
+
+# Run satellite-maintain service status before and after the rotation.
+satellite_cert_rotate_service_check: true
+
+# Where the role writes backups of the previous certificate material and the
+# installer logs on the target host.
+satellite_cert_rotate_backup_dir: /root/satellite-cert-rotate-backups
+
+# Directories backed up before the installer runs. Tar only; nothing is
+# removed. Set to an empty list to skip.
+satellite_cert_rotate_backup_paths:
+  - /etc/pki/katello
+  - /etc/foreman/ssl
+  - /root/ssl-build
+
+# --- Verification ------------------------------------------------------------
+satellite_cert_rotate_verify: true
+
+# Host and port checked after rotation. Defaults to the host's own FQDN on 443.
+satellite_cert_rotate_verify_host: "{{ ansible_facts['fqdn'] | default(inventory_hostname) }}"
+satellite_cert_rotate_verify_port: 443
+
+# Seconds to wait for services to come back before verification.
+satellite_cert_rotate_settle_seconds: 60
+
+# Fail verification if the served certificate does not validate against the
+# control node trust store. Off by default: the control node usually does not
+# carry the deployment's private CA.
+satellite_cert_rotate_verify_trust_chain: false
+
+# Write a Markdown rotation report to the control node.
+satellite_cert_rotate_report: true
+satellite_cert_rotate_report_dest: "./satellite-cert-rotation-{{ inventory_hostname }}.md"

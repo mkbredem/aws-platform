@@ -2,16 +2,20 @@
 # =============================================================================
 # aap_cert_rotate - entry point
 #
-# UNSUPPORTED CONTENT. Not a Red Hat product, not supported by Red Hat or any
-# Red Hat employee, not validated against all environments. See README.md.
+# UNSUPPORTED CONTENT. An illustration of what this automation could look like.
+# Not a Red Hat product. Not supported by Red Hat, any Red Hat employee, or the
+# author. Not validated against all environments. Run at your own risk.
+# See README.md.
 # =============================================================================
 
 - name: Display the unsupported-content and downtime notice
   ansible.builtin.debug:
     msg:
-      - "aap_cert_rotate is UNSUPPORTED community content. It is not a Red Hat"
-      - "product, is not supported by Red Hat or any Red Hat employee, and has"
-      - "not been validated against every Ansible Automation Platform topology."
+      - "aap_cert_rotate is UNSUPPORTED content: an illustration of what this"
+      - "automation could look like. It is not a Red Hat product, is not"
+      - "supported by Red Hat, any Red Hat employee, or its author, and has not"
+      - "been validated against every Ansible Automation Platform topology."
+      - "Whoever runs it does so at their own risk."
       - "Running the installation program restarts every platform service:"
       - "expect a full outage for the duration of the run."
       - "Run this from a workstation or a separate AAP cluster - never from the"

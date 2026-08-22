@@ -2,9 +2,10 @@
 # =============================================================================
 # aap_cert_rotate - default variables
 #
-# UNSUPPORTED CONTENT. This role is not a Red Hat product, is not supported by
-# Red Hat or any Red Hat employee, and has not been validated against all
-# Ansible Automation Platform topologies. Read README.md before running it.
+# UNSUPPORTED CONTENT. An illustration of what this automation could look like.
+# Not a Red Hat product. Not supported by Red Hat, any Red Hat employee, or the
+# author. Not validated against all Ansible Automation Platform topologies. Run
+# at your own risk. Read README.md first.
 # =============================================================================
 
 # --- Deployment type ---------------------------------------------------------

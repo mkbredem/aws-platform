@@ -1,0 +1,148 @@
+---
+# Satellite Server: validate with katello-certs-check, then deploy with
+# satellite-installer. Both run on the Satellite Server itself, as root.
+
+- name: Set the rotation timestamp
+  ansible.builtin.set_fact:
+    satellite_cert_rotate_stamp: "{{ lookup('ansible.builtin.pipe', 'date +%Y%m%d-%H%M%S') }}"
+
+- name: Create the certificate directory on the Satellite Server
+  ansible.builtin.file:
+    path: "{{ satellite_cert_rotate_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  become: true
+
+- name: Stage the certificate and CA bundle on the Satellite Server
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ satellite_cert_rotate_dir }}/{{ item.name }}"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  loop:
+    - src: "{{ satellite_cert_rotate_cert }}"
+      name: satellite_cert.pem
+    - src: "{{ satellite_cert_rotate_ca_bundle }}"
+      name: ca_cert_bundle.pem
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Stage the private key on the Satellite Server
+  ansible.builtin.copy:
+    src: "{{ satellite_cert_rotate_key }}"
+    dest: "{{ satellite_cert_rotate_dir }}/satellite_cert_key.pem"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  no_log: true
+
+- name: Validate the certificate material with katello-certs-check
+  ansible.builtin.command:
+    argv:
+      - katello-certs-check
+      - -t
+      - satellite
+      - -b
+      - "{{ satellite_cert_rotate_dir }}/ca_cert_bundle.pem"
+      - -c
+      - "{{ satellite_cert_rotate_dir }}/satellite_cert.pem"
+      - -k
+      - "{{ satellite_cert_rotate_dir }}/satellite_cert_key.pem"
+  register: satellite_cert_rotate_check
+  become: true
+  changed_when: false
+  failed_when: >-
+    satellite_cert_rotate_check.rc != 0
+    or satellite_cert_rotate_check_failure_markers
+       | select('in', satellite_cert_rotate_check.stdout) | list | length > 0
+
+- name: Report the katello-certs-check result
+  ansible.builtin.debug:
+    var: satellite_cert_rotate_check.stdout_lines
+
+- name: Stop here when running in validate-only mode
+  when: satellite_cert_rotate_validate_only | bool
+  block:
+    - name: Report that validation passed and nothing was changed
+      ansible.builtin.debug:
+        msg: >-
+          katello-certs-check passed on {{ inventory_hostname }}. No changes
+          were made. Set satellite_cert_rotate_validate_only=false and
+          satellite_cert_rotate_accept_downtime=true to deploy.
+
+    - name: End the play for this host
+      ansible.builtin.meta: end_host
+
+- name: Record the service state before the rotation
+  ansible.builtin.command:
+    argv:
+      - satellite-maintain
+      - service
+      - status
+  register: satellite_cert_rotate_pre_status
+  become: true
+  changed_when: false
+  failed_when: false
+  when: satellite_cert_rotate_service_check | bool
+
+- name: Create the backup directory
+  ansible.builtin.file:
+    path: "{{ satellite_cert_rotate_backup_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  become: true
+
+- name: Check which certificate directories exist
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: satellite_cert_rotate_backup_stat
+  become: true
+  loop: "{{ satellite_cert_rotate_backup_paths }}"
+
+- name: Archive the current certificate directories
+  community.general.archive:
+    path: "{{ satellite_cert_rotate_backup_stat.results | selectattr('stat.exists') | map(attribute='item') | list }}"
+    dest: >-
+      {{ satellite_cert_rotate_backup_dir }}/pki-{{ satellite_cert_rotate_stamp }}.tar.gz
+    format: gz
+    mode: "0600"
+  become: true
+  when: satellite_cert_rotate_backup_stat.results | selectattr('stat.exists') | list | length > 0
+
+# The documented deployment command. Nothing about it is idempotent: it
+# restarts Satellite services every time it runs.
+- name: Deploy the certificate with satellite-installer
+  ansible.builtin.command:
+    argv:
+      - satellite-installer
+      - --scenario
+      - satellite
+      - --certs-server-cert
+      - "{{ satellite_cert_rotate_dir }}/satellite_cert.pem"
+      - --certs-server-key
+      - "{{ satellite_cert_rotate_dir }}/satellite_cert_key.pem"
+      - --certs-server-ca-cert
+      - "{{ satellite_cert_rotate_dir }}/ca_cert_bundle.pem"
+      - --certs-update-server
+      - --certs-update-server-ca
+  register: satellite_cert_rotate_installer
+  become: true
+  changed_when: true
+  timeout: "{{ satellite_cert_rotate_installer_timeout | int }}"
+
+- name: Save the installer output
+  ansible.builtin.copy:
+    content: "{{ satellite_cert_rotate_installer.stdout }}"
+    dest: >-
+      {{ satellite_cert_rotate_backup_dir }}/satellite-installer-{{ satellite_cert_rotate_stamp }}.log
+    owner: root
+    group: root
+    mode: "0600"
+  become: true

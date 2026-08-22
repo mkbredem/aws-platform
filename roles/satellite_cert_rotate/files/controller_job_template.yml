@@ -1,0 +1,64 @@
+---
+# =============================================================================
+# Create the Satellite certificate rotation job template on automation
+# controller.
+#
+# UNSUPPORTED CONTENT. Not supported by Red Hat, any Red Hat employee, or the
+# author. Run at your own risk. See roles/satellite_cert_rotate/README.md.
+#
+# Connection details come from the ansible.controller collection's standard
+# environment variables (CONTROLLER_HOST, CONTROLLER_OAUTH_TOKEN or
+# CONTROLLER_USERNAME/CONTROLLER_PASSWORD, CONTROLLER_VERIFY_SSL) or from a Red
+# Hat Ansible Automation Platform credential attached to the job that runs this
+# playbook. Never pass them as plaintext extra variables.
+#
+# Override the variables below on the command line or in group_vars:
+#
+#   ansible-playbook roles/satellite_cert_rotate/files/controller_job_template.yml \
+#     -e satellite_cert_rotate_jt_organization="Platform Engineering" \
+#     -e satellite_cert_rotate_jt_inventory="Satellite Infrastructure" \
+#     -e satellite_cert_rotate_jt_machine_credential="satellite-root-ssh"
+# =============================================================================
+
+- name: Publish the Satellite TLS certificate rotation job template
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  vars:
+    satellite_cert_rotate_jt_name: "Satellite - Rotate TLS certificates (UNSUPPORTED)"
+    satellite_cert_rotate_jt_organization: Default
+    satellite_cert_rotate_jt_project: aws-platform
+    satellite_cert_rotate_jt_inventory: Satellite Infrastructure
+    satellite_cert_rotate_jt_playbook: rotate_satellite_certs.yml
+    satellite_cert_rotate_jt_machine_credential: satellite-root-ssh
+    # Vaulted credential holding the certificate, key, and CA bundle paths or
+    # content. Certificate material must not come from a survey answer.
+    satellite_cert_rotate_jt_vault_credential: satellite-cert-vault
+    # Execution environment carrying community.crypto and community.general.
+    satellite_cert_rotate_jt_execution_environment: satellite-cert-rotate-ee
+    satellite_cert_rotate_jt_survey: "{{ playbook_dir }}/satellite_cert_rotate_survey.json"
+
+  tasks:
+    - name: Create the job template
+      ansible.controller.job_template:
+        name: "{{ satellite_cert_rotate_jt_name }}"
+        description: >-
+          Unsupported content, run at your own risk. Renews custom TLS certificates on Red Hat
+          Satellite Server and Capsule Servers. Restarts Satellite services on
+          every server it touches.
+        job_type: run
+        organization: "{{ satellite_cert_rotate_jt_organization }}"
+        project: "{{ satellite_cert_rotate_jt_project }}"
+        playbook: "{{ satellite_cert_rotate_jt_playbook }}"
+        inventory: "{{ satellite_cert_rotate_jt_inventory }}"
+        execution_environment: "{{ satellite_cert_rotate_jt_execution_environment }}"
+        credentials:
+          - "{{ satellite_cert_rotate_jt_machine_credential }}"
+          - "{{ satellite_cert_rotate_jt_vault_credential }}"
+        become_enabled: true
+        ask_variables_on_launch: false
+        ask_limit_on_launch: true
+        survey_enabled: true
+        survey_spec: "{{ lookup('ansible.builtin.file', satellite_cert_rotate_jt_survey) | from_json }}"
+        state: present

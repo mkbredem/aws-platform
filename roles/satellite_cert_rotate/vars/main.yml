@@ -1,0 +1,20 @@
+---
+# =============================================================================
+# satellite_cert_rotate - internal values
+#
+# Commands and flags are taken from "Renewing certificates" in the Administering
+# Red Hat Satellite guide, 6.16 through 6.19. Verify against the release you
+# run before using this anywhere that matters.
+# =============================================================================
+
+# Satellite 6.16 and 6.17 include --foreman-proxy-register-in-foreman "true"
+# in the documented Capsule deployment command. 6.18 and later do not.
+satellite_cert_rotate_needs_register_flag: "{{ satellite_cert_rotate_version is version('6.18', '<') }}"
+
+# Strings that mean katello-certs-check rejected the input, checked in addition
+# to the exit code. Older builds of the script did not always propagate a
+# non-zero exit code on every failure path.
+satellite_cert_rotate_check_failure_markers:
+  - "Validation failed"
+  - "[FAIL]"
+  - "FAIL:"

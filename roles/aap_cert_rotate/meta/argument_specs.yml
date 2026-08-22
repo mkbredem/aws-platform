@@ -3,9 +3,10 @@ argument_specs:
   main:
     short_description: Rotate or renew Ansible Automation Platform TLS certificates
     description:
-      - Unsupported community content. Not a Red Hat product, not supported by
-        Red Hat or any Red Hat employee, and not validated against every
-        Ansible Automation Platform topology.
+      - Unsupported content, provided as an illustration only. Not a Red Hat
+        product; not supported by Red Hat, any Red Hat employee, or the author;
+        not validated against every Ansible Automation Platform topology. Run
+        at your own risk.
       - Running the installation program restarts every platform service.
     options:
       aap_cert_rotate_install_type:

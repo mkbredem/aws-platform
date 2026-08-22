@@ -1,0 +1,24 @@
+---
+galaxy_info:
+  role_name: satellite_cert_rotate
+  author: Michael Bredemeier
+  description: >-
+    Rotate or renew custom TLS certificates on Red Hat Satellite Server and
+    Capsule Servers using katello-certs-check, capsule-certs-generate, and
+    satellite-installer. Unsupported content, provided as an illustration only
+    and run at your own risk - see README.md.
+  company: unaffiliated
+  license: MIT
+  min_ansible_version: "2.16"
+  platforms:
+    - name: EL
+      versions:
+        - "8"
+        - "9"
+  galaxy_tags:
+    - satellite
+    - katello
+    - tls
+    - certificates
+
+dependencies: []

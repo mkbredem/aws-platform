@@ -1,0 +1,165 @@
+---
+# Preflight: fail before anything on the Satellite or Capsule is touched.
+
+- name: Assert a supported component was selected
+  ansible.builtin.assert:
+    that:
+      - satellite_cert_rotate_component in ['satellite', 'capsule']
+    fail_msg: >-
+      satellite_cert_rotate_component must be 'satellite' or 'capsule'
+      (got '{{ satellite_cert_rotate_component }}').
+
+- name: Assert the certificate material was supplied
+  ansible.builtin.assert:
+    that:
+      - satellite_cert_rotate_cert | length > 0
+      - satellite_cert_rotate_key | length > 0
+      - satellite_cert_rotate_ca_bundle | length > 0
+    fail_msg: >-
+      Set satellite_cert_rotate_cert, satellite_cert_rotate_key, and
+      satellite_cert_rotate_ca_bundle to the PEM files for
+      {{ inventory_hostname }}. Each server needs a certificate whose CN
+      matches its own FQDN.
+
+- name: Confirm the certificate material exists on the control node
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: satellite_cert_rotate_src_stat
+  delegate_to: localhost
+  become: false
+  loop:
+    - "{{ satellite_cert_rotate_cert }}"
+    - "{{ satellite_cert_rotate_key }}"
+    - "{{ satellite_cert_rotate_ca_bundle }}"
+
+- name: Assert the certificate material exists on the control node
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+    fail_msg: "Not found on the control node: {{ item.item }}"
+  loop: "{{ satellite_cert_rotate_src_stat.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+- name: Assert the downtime acknowledgement was given
+  ansible.builtin.assert:
+    that:
+      - satellite_cert_rotate_accept_downtime | bool
+    fail_msg: >-
+      satellite-installer restarts Satellite services and interrupts content
+      delivery, the web UI, and remote execution. Set
+      satellite_cert_rotate_accept_downtime=true to proceed, or
+      satellite_cert_rotate_validate_only=true to run katello-certs-check
+      without changing anything.
+  when: not (satellite_cert_rotate_validate_only | bool)
+
+- name: Assert the Capsule path has the Satellite Server details it needs
+  ansible.builtin.assert:
+    that:
+      - satellite_cert_rotate_satellite_host | length > 0
+      - satellite_cert_rotate_satellite_host in hostvars
+      - satellite_cert_rotate_foreman_base_url | length > 0
+    fail_msg: >-
+      Capsule rotation runs katello-certs-check and capsule-certs-generate on
+      the Satellite Server. Set satellite_cert_rotate_satellite_host to the
+      Satellite's inventory hostname (it must be in this inventory and
+      reachable) and satellite_cert_rotate_foreman_base_url to its URL, for
+      example https://satellite.example.com.
+  when: satellite_cert_rotate_component == 'capsule'
+
+- name: Read the new certificate
+  community.crypto.x509_certificate_info:
+    path: "{{ satellite_cert_rotate_cert }}"
+    valid_at:
+      window: "+7d"
+  register: satellite_cert_rotate_new_info
+  delegate_to: localhost
+  become: false
+
+- name: Assert the new certificate is valid and not about to expire
+  ansible.builtin.assert:
+    that:
+      - satellite_cert_rotate_new_info.valid_at.window
+    fail_msg: >-
+      The certificate for {{ inventory_hostname }} is expired or expires within
+      7 days (notAfter {{ satellite_cert_rotate_new_info.not_after }}).
+
+- name: Record the new certificate identity
+  ansible.builtin.set_fact:
+    satellite_cert_rotate_new_serial: "{{ satellite_cert_rotate_new_info.serial_number }}"
+    satellite_cert_rotate_new_issuer: "{{ satellite_cert_rotate_new_info.issuer.commonName | default('unknown') }}"
+    satellite_cert_rotate_new_cn: "{{ satellite_cert_rotate_new_info.subject.commonName | default('unknown') }}"
+
+- name: Warn when the certificate CN does not match the server FQDN
+  ansible.builtin.debug:
+    msg: >-
+      WARNING: certificate CN is '{{ satellite_cert_rotate_new_cn }}' but this
+      host resolves to '{{ satellite_cert_rotate_verify_host }}'.
+      katello-certs-check requires the CN to match the FQDN of the server and
+      will reject this.
+  when: satellite_cert_rotate_new_cn != satellite_cert_rotate_verify_host
+
+- name: Read the certificate the host currently serves
+  community.crypto.get_certificate:
+    host: "{{ satellite_cert_rotate_verify_host }}"
+    port: "{{ satellite_cert_rotate_verify_port | int }}"
+  register: satellite_cert_rotate_current_info
+  delegate_to: localhost
+  become: false
+  failed_when: false
+
+- name: Decide whether this host already serves the new certificate
+  ansible.builtin.set_fact:
+    satellite_cert_rotate_already_current: >-
+      {{ satellite_cert_rotate_skip_if_current | bool
+         and satellite_cert_rotate_current_info.serial_number is defined
+         and satellite_cert_rotate_current_info.serial_number | string
+             == satellite_cert_rotate_new_serial | string }}
+
+- name: Assert the certificate authority is not changing
+  ansible.builtin.assert:
+    that:
+      - satellite_cert_rotate_accept_ca_change | bool
+    fail_msg: >-
+      The new certificate is issued by
+      '{{ satellite_cert_rotate_new_issuer }}' but
+      {{ satellite_cert_rotate_verify_host }} currently serves a certificate
+      issued by
+      '{{ satellite_cert_rotate_current_info.issuer.commonName | default("unknown") }}'.
+      Changing the CA breaks every registered host, Capsule, and integration
+      until the new CA is deployed to them. Deploy the new CA to your hosts
+      first (see README.md), then set
+      satellite_cert_rotate_accept_ca_change=true.
+  when:
+    - satellite_cert_rotate_current_info.issuer is defined
+    - satellite_cert_rotate_new_issuer !=
+      (satellite_cert_rotate_current_info.issuer.commonName | default('unknown'))
+
+- name: Check for an installer or maintenance run already in progress
+  ansible.builtin.command:
+    argv:
+      - pgrep
+      - -f
+      - "{{ item }}"
+  register: satellite_cert_rotate_running
+  changed_when: false
+  failed_when: false
+  become: true
+  loop:
+    - satellite-installer
+    - satellite-maintain
+  when: satellite_cert_rotate_check_concurrent_installer | bool
+
+- name: Assert no installer or maintenance run is in progress
+  ansible.builtin.assert:
+    that:
+      - item.rc != 0
+    fail_msg: >-
+      '{{ item.item }}' is already running on {{ inventory_hostname }}
+      (PIDs {{ item.stdout_lines | default([]) | join(', ') }}). Only one
+      installer or maintenance operation may run at a time; starting another
+      can leave the deployment in an inconsistent state.
+  loop: "{{ satellite_cert_rotate_running.results | default([]) }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: satellite_cert_rotate_check_concurrent_installer | bool

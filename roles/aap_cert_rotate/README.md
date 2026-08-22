@@ -6,24 +6,33 @@ RPM-based installations.
 
 ---
 
-## NOT SUPPORTED BY RED HAT
+## NOT SUPPORTED - BY ANYONE
 
-**This role is unsupported community content.** It is not a Red Hat product, it
-is not supported by Red Hat, Red Hat Support, or any Red Hat employee, and it
-carries no warranty or service-level commitment of any kind. It has **not** been
-validated against every Ansible Automation Platform version, topology, or
-configuration. Nothing in it modifies Red Hat's support policy for your
-platform, and using it does not entitle you to support for its behavior.
+**This exists to illustrate what automating this procedure could look like.
+It is not a product, not a deliverable, and not supported by anyone.**
+
+- Not a Red Hat product. Not supported by Red Hat, Red Hat Support, or any Red
+  Hat employee in any capacity - the author of this role included.
+- No warranty, no service-level commitment, no maintenance, no bug fixes, and
+  no commitment to answer questions about it, from Red Hat or from the author.
+- **Not** validated against every Ansible Automation Platform version,
+  topology, or configuration.
+- Nothing here modifies Red Hat's support policy for an Ansible Automation
+  Platform deployment, and running it does not entitle anyone to support for
+  its behavior or for a platform it has touched.
+- Anyone who runs it does so entirely at their own risk and is responsible for
+  reviewing it, testing it in a lab first, and deciding whether it fits their
+  environment.
 
 It wraps the procedures published in *Operating Ansible Automation Platform* →
 *Renewing and changing the SSL/TLS certificates*. Where this role and the
-product documentation disagree, **the documentation is correct**. Verify every
-inventory variable name and file path against the documentation for the exact
-release you are running before you use this against anything you care about.
-Variable names and paths have changed between releases.
+product documentation disagree, **the documentation is correct**. Every
+inventory variable name and file path needs checking against the documentation
+for the exact release in use - variable names and paths have changed between
+releases.
 
-Test it in a lab first. Have a restore path for the platform, not just for the
-certificates.
+There should be a restore path for the platform, not just for the certificates,
+before anyone runs this.
 
 ---
 
@@ -196,7 +205,7 @@ them and run the installation program again. That is a second outage.
 Operator-based: the previous TLS secret is still in the namespace. Patch
 `route_tls_secret` back to it and let the operator reconcile.
 
-## Why this is worth automating on AAP rather than by hand
+## Where AAP changes the picture here, and where it does not
 
 The rotation itself is an installer run - `ansible-core` alone does that fine.
 What the platform adds is the operational envelope: the survey turns the
@@ -204,9 +213,11 @@ change into a request a platform operator can submit without shell access to
 the installer host, RBAC controls who may submit it, the certificate material
 comes from a credential rather than someone's home directory, the job output is
 the change record, and a workflow can chain the rotation to a notification and
-an approval node. If you are rotating one lab cluster once a year, a
-workstation and this role are enough - be honest about that.
+an approval node. For one lab cluster rotated once a year, a workstation and a
+playbook are enough; what the platform adds there is operational, not
+technical.
 
 ## License
 
-MIT. Provided as-is, without support or warranty.
+MIT. Provided as-is, with no warranty and no support of any kind, from Red Hat
+or from the author. Use at your own risk.

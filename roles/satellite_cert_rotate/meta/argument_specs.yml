@@ -1,0 +1,74 @@
+---
+argument_specs:
+  main:
+    short_description: Rotate custom TLS certificates on Satellite and Capsule Servers
+    description:
+      - Unsupported content, provided as an illustration only. Not a Red Hat
+        product; not supported by Red Hat, any Red Hat employee, or the author;
+        not validated against every Satellite version or topology. Run at your
+        own risk.
+      - The installation program restarts Satellite services on every run.
+    options:
+      satellite_cert_rotate_component:
+        description: Whether this host is the Satellite Server or a Capsule Server.
+        type: str
+        default: satellite
+        choices: [satellite, capsule]
+      satellite_cert_rotate_version:
+        description:
+          - Satellite version, used to select the Capsule installer flags.
+            6.16 and 6.17 also pass --foreman-proxy-register-in-foreman.
+        type: str
+        default: "6.18"
+      satellite_cert_rotate_satellite_host:
+        description:
+          - Inventory hostname of the Satellite Server. Required for the
+            Capsule path, where katello-certs-check and capsule-certs-generate
+            run on the Satellite.
+        type: str
+        default: ""
+      satellite_cert_rotate_foreman_base_url:
+        description: URL a Capsule uses to reach the Satellite Server.
+        type: str
+        default: ""
+      satellite_cert_rotate_cert:
+        description: PEM certificate for this server, on the control node.
+        type: str
+        default: ""
+      satellite_cert_rotate_key:
+        description: PEM private key for this server, on the control node.
+        type: str
+        default: ""
+      satellite_cert_rotate_ca_bundle:
+        description: PEM CA bundle for the issuing authority, on the control node.
+        type: str
+        default: ""
+      satellite_cert_rotate_accept_downtime:
+        description: Acknowledgement that Satellite services will be restarted.
+        type: bool
+        default: false
+      satellite_cert_rotate_validate_only:
+        description: Run katello-certs-check and stop before any change.
+        type: bool
+        default: false
+      satellite_cert_rotate_accept_ca_change:
+        description:
+          - Allow deploying a certificate issued by a different CA than the one
+            currently served. This breaks registered hosts until they trust the
+            new CA.
+        type: bool
+        default: false
+      satellite_cert_rotate_skip_if_current:
+        description:
+          - Skip a host already serving the certificate being deployed,
+            compared by serial number.
+        type: bool
+        default: true
+      satellite_cert_rotate_dir:
+        description: Directory the certificate material is staged into on the server.
+        type: str
+        default: /root/satellite_cert_rotate
+      satellite_cert_rotate_verify:
+        description: Run post-rotation verification from the control node.
+        type: bool
+        default: true

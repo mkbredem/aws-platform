@@ -1,0 +1,226 @@
+---
+# Capsule Server: validation and archive generation happen on the SATELLITE
+# Server (that is where katello-certs-check and capsule-certs-generate live),
+# the archive is moved to the Capsule, and the Capsule installer deploys it.
+#
+# This play targets the Capsule; Satellite-side tasks are delegated to
+# satellite_cert_rotate_satellite_host.
+
+- name: Set the rotation timestamp
+  ansible.builtin.set_fact:
+    satellite_cert_rotate_stamp: "{{ lookup('ansible.builtin.pipe', 'date +%Y%m%d-%H%M%S') }}"
+    satellite_cert_rotate_capsule_fqdn: "{{ satellite_cert_rotate_verify_host }}"
+
+- name: Set the derived paths for this Capsule
+  ansible.builtin.set_fact:
+    satellite_cert_rotate_capsule_workdir: >-
+      {{ satellite_cert_rotate_capsule_tar_dir }}/{{ satellite_cert_rotate_capsule_fqdn }}
+    satellite_cert_rotate_capsule_tar: >-
+      {{ satellite_cert_rotate_capsule_tar_dir }}/{{ satellite_cert_rotate_capsule_fqdn }}/{{
+      satellite_cert_rotate_capsule_fqdn }}-certs.tar
+
+- name: Create the Capsule certificate directory on the Satellite Server
+  ansible.builtin.file:
+    path: "{{ satellite_cert_rotate_capsule_workdir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  become: true
+  delegate_to: "{{ satellite_cert_rotate_satellite_host }}"
+
+- name: Stage the Capsule certificate and CA bundle on the Satellite Server
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ satellite_cert_rotate_capsule_workdir }}/{{ item.name }}"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  delegate_to: "{{ satellite_cert_rotate_satellite_host }}"
+  loop:
+    - src: "{{ satellite_cert_rotate_cert }}"
+      name: capsule_cert.pem
+    - src: "{{ satellite_cert_rotate_ca_bundle }}"
+      name: ca_cert_bundle.pem
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Stage the Capsule private key on the Satellite Server
+  ansible.builtin.copy:
+    src: "{{ satellite_cert_rotate_key }}"
+    dest: "{{ satellite_cert_rotate_capsule_workdir }}/capsule_cert_key.pem"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  delegate_to: "{{ satellite_cert_rotate_satellite_host }}"
+  no_log: true
+
+- name: Validate the Capsule certificate material with katello-certs-check
+  ansible.builtin.command:
+    argv:
+      - katello-certs-check
+      - -t
+      - capsule
+      - -b
+      - "{{ satellite_cert_rotate_capsule_workdir }}/ca_cert_bundle.pem"
+      - -c
+      - "{{ satellite_cert_rotate_capsule_workdir }}/capsule_cert.pem"
+      - -k
+      - "{{ satellite_cert_rotate_capsule_workdir }}/capsule_cert_key.pem"
+  register: satellite_cert_rotate_check
+  become: true
+  delegate_to: "{{ satellite_cert_rotate_satellite_host }}"
+  changed_when: false
+  failed_when: >-
+    satellite_cert_rotate_check.rc != 0
+    or satellite_cert_rotate_check_failure_markers
+       | select('in', satellite_cert_rotate_check.stdout) | list | length > 0
+
+- name: Report the katello-certs-check result
+  ansible.builtin.debug:
+    var: satellite_cert_rotate_check.stdout_lines
+
+- name: Stop here when running in validate-only mode
+  when: satellite_cert_rotate_validate_only | bool
+  block:
+    - name: Report that validation passed and nothing was changed
+      ansible.builtin.debug:
+        msg: >-
+          katello-certs-check passed for
+          {{ satellite_cert_rotate_capsule_fqdn }}. No changes were made.
+
+    - name: End the play for this host
+      ansible.builtin.meta: end_host
+
+- name: Generate the Capsule certificate archive on the Satellite Server
+  ansible.builtin.command:
+    argv:
+      - capsule-certs-generate
+      - --certs-tar
+      - "{{ satellite_cert_rotate_capsule_tar }}"
+      - --certs-update-server
+      - --foreman-proxy-fqdn
+      - "{{ satellite_cert_rotate_capsule_fqdn }}"
+      - --server-ca-cert
+      - "{{ satellite_cert_rotate_capsule_workdir }}/ca_cert_bundle.pem"
+      - --server-cert
+      - "{{ satellite_cert_rotate_capsule_workdir }}/capsule_cert.pem"
+      - --server-key
+      - "{{ satellite_cert_rotate_capsule_workdir }}/capsule_cert_key.pem"
+  register: satellite_cert_rotate_generate
+  become: true
+  delegate_to: "{{ satellite_cert_rotate_satellite_host }}"
+  changed_when: true
+  timeout: "{{ satellite_cert_rotate_installer_timeout | int }}"
+
+# capsule-certs-generate prints the satellite-installer command to run on the
+# Capsule. This role builds that command from the documented flags rather than
+# scraping it, but the output is kept so an operator can diff the two.
+- name: Save the capsule-certs-generate output on the Satellite Server
+  ansible.builtin.copy:
+    content: "{{ satellite_cert_rotate_generate.stdout }}"
+    dest: >-
+      {{ satellite_cert_rotate_capsule_workdir }}/capsule-certs-generate-{{
+      satellite_cert_rotate_stamp }}.out
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  delegate_to: "{{ satellite_cert_rotate_satellite_host }}"
+
+- name: Retrieve the certificate archive from the Satellite Server
+  ansible.builtin.fetch:
+    src: "{{ satellite_cert_rotate_capsule_tar }}"
+    dest: "{{ satellite_cert_rotate_fetch_dir }}/{{ satellite_cert_rotate_capsule_fqdn }}-certs.tar"
+    flat: true
+  become: true
+  delegate_to: "{{ satellite_cert_rotate_satellite_host }}"
+
+- name: Create the certificate directory on the Capsule Server
+  ansible.builtin.file:
+    path: "{{ satellite_cert_rotate_capsule_tar_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  become: true
+
+# The archive contains the Capsule's private key. It must stay root-only, and
+# it must NOT be deleted afterwards: Capsule upgrades need it.
+- name: Copy the certificate archive to the Capsule Server
+  ansible.builtin.copy:
+    src: "{{ satellite_cert_rotate_fetch_dir }}/{{ satellite_cert_rotate_capsule_fqdn }}-certs.tar"
+    dest: "{{ satellite_cert_rotate_capsule_tar_dir }}/{{ satellite_cert_rotate_capsule_fqdn }}-certs.tar"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+
+- name: Record the service state before the rotation
+  ansible.builtin.command:
+    argv:
+      - satellite-maintain
+      - service
+      - status
+  register: satellite_cert_rotate_pre_status
+  become: true
+  changed_when: false
+  failed_when: false
+  when: satellite_cert_rotate_service_check | bool
+
+- name: Create the backup directory on the Capsule Server
+  ansible.builtin.file:
+    path: "{{ satellite_cert_rotate_backup_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  become: true
+
+- name: Check which certificate directories exist on the Capsule Server
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: satellite_cert_rotate_backup_stat
+  become: true
+  loop: "{{ satellite_cert_rotate_backup_paths }}"
+
+- name: Archive the current certificate directories on the Capsule Server
+  community.general.archive:
+    path: "{{ satellite_cert_rotate_backup_stat.results | selectattr('stat.exists') | map(attribute='item') | list }}"
+    dest: >-
+      {{ satellite_cert_rotate_backup_dir }}/pki-{{ satellite_cert_rotate_stamp }}.tar.gz
+    format: gz
+    mode: "0600"
+  become: true
+  when: satellite_cert_rotate_backup_stat.results | selectattr('stat.exists') | list | length > 0
+
+- name: Build the Capsule installer command
+  ansible.builtin.set_fact:
+    satellite_cert_rotate_capsule_argv: >-
+      {{ ['satellite-installer', '--scenario', 'capsule',
+          '--certs-tar-file',
+          satellite_cert_rotate_capsule_tar_dir ~ '/' ~ satellite_cert_rotate_capsule_fqdn ~ '-certs.tar',
+          '--certs-update-server',
+          '--foreman-proxy-foreman-base-url', satellite_cert_rotate_foreman_base_url]
+         + ((satellite_cert_rotate_needs_register_flag | bool)
+            | ternary(['--foreman-proxy-register-in-foreman', 'true'], [])) }}
+
+- name: Deploy the certificate on the Capsule Server
+  ansible.builtin.command:
+    argv: "{{ satellite_cert_rotate_capsule_argv }}"
+  register: satellite_cert_rotate_installer
+  become: true
+  changed_when: true
+  timeout: "{{ satellite_cert_rotate_installer_timeout | int }}"
+
+- name: Save the installer output
+  ansible.builtin.copy:
+    content: "{{ satellite_cert_rotate_installer.stdout }}"
+    dest: >-
+      {{ satellite_cert_rotate_backup_dir }}/satellite-installer-{{ satellite_cert_rotate_stamp }}.log
+    owner: root
+    group: root
+    mode: "0600"
+  become: true

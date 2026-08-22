@@ -1,0 +1,68 @@
+---
+# Post-rotation verification, run from the control node against the server's
+# public endpoint - what a registered host or a browser actually sees.
+
+- name: Wait for services to come back
+  ansible.builtin.pause:
+    seconds: "{{ satellite_cert_rotate_settle_seconds | int }}"
+  when: satellite_cert_rotate_settle_seconds | int > 0
+
+- name: Record the service state after the rotation
+  ansible.builtin.command:
+    argv:
+      - satellite-maintain
+      - service
+      - status
+  register: satellite_cert_rotate_post_status
+  become: true
+  changed_when: false
+  failed_when: false
+  when: satellite_cert_rotate_service_check | bool
+
+- name: Retrieve the certificate now served
+  community.crypto.get_certificate:
+    host: "{{ satellite_cert_rotate_verify_host }}"
+    port: "{{ satellite_cert_rotate_verify_port | int }}"
+  register: satellite_cert_rotate_served
+  delegate_to: localhost
+  become: false
+  retries: 20
+  delay: 30
+  until: satellite_cert_rotate_served is succeeded
+
+- name: Assert the server serves the certificate that was deployed
+  ansible.builtin.assert:
+    that:
+      - satellite_cert_rotate_served.serial_number | string == satellite_cert_rotate_new_serial | string
+    fail_msg: >-
+      {{ satellite_cert_rotate_verify_host }}:{{ satellite_cert_rotate_verify_port }}
+      is serving serial {{ satellite_cert_rotate_served.serial_number }}, not the
+      deployed {{ satellite_cert_rotate_new_serial }}. Check the installer log in
+      {{ satellite_cert_rotate_backup_dir }}, and check whether a load balancer
+      terminates TLS in front of this server.
+    success_msg: >-
+      {{ satellite_cert_rotate_verify_host }} serves
+      subject={{ satellite_cert_rotate_served.subject.commonName | default('n/a') }}
+      issuer={{ satellite_cert_rotate_served.issuer.commonName | default('n/a') }}
+      notAfter={{ satellite_cert_rotate_served.not_after }}
+
+- name: Check that the server answers over TLS
+  ansible.builtin.uri:
+    url: "https://{{ satellite_cert_rotate_verify_host }}:{{ satellite_cert_rotate_verify_port }}/pub/"
+    validate_certs: "{{ satellite_cert_rotate_verify_trust_chain | bool }}"
+    status_code: [200, 301, 302, 401, 403]
+  delegate_to: localhost
+  become: false
+  retries: 10
+  delay: 30
+  register: satellite_cert_rotate_endpoint_check
+  until: satellite_cert_rotate_endpoint_check is succeeded
+
+- name: Write the rotation report
+  ansible.builtin.template:
+    src: rotation_report.md.j2
+    dest: "{{ satellite_cert_rotate_report_dest }}"
+    mode: "0644"
+  delegate_to: localhost
+  become: false
+  when: satellite_cert_rotate_report | bool

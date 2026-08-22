@@ -3,7 +3,8 @@
 # Create the certificate rotation job template on a MANAGEMENT automation
 # controller - one that is not the platform being rotated.
 #
-# UNSUPPORTED CONTENT. See roles/aap_cert_rotate/README.md.
+# UNSUPPORTED CONTENT. Not supported by Red Hat, any Red Hat employee, or the
+# author. Run at your own risk. See roles/aap_cert_rotate/README.md.
 #
 # Connection details come from the ansible.controller collection's standard
 # environment variables (CONTROLLER_HOST, CONTROLLER_OAUTH_TOKEN or
@@ -44,7 +45,7 @@
       ansible.controller.job_template:
         name: "{{ aap_cert_rotate_jt_name }}"
         description: >-
-          Unsupported content. Rotates or renews Ansible Automation Platform
+          Unsupported content, run at your own risk. Rotates or renews Ansible Automation Platform
           TLS certificates on a remote cluster. Restarts every service on the
           target platform. Do not point this at the cluster running it.
         job_type: run
