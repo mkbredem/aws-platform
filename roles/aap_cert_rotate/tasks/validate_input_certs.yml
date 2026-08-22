@@ -1,0 +1,71 @@
+---
+# Validate supplied PEM material on the control node before touching anything.
+# Requires the community.crypto collection in the execution environment.
+# Set aap_cert_rotate_validate_input=false to skip.
+
+- name: Read the supplied certificates
+  community.crypto.x509_certificate_info:
+    path: "{{ aap_cert_rotate_resolved[item].cert }}"
+    valid_at:
+      window: "+{{ aap_cert_rotate_min_validity_days }}d"
+  register: aap_cert_rotate_cert_info
+  delegate_to: localhost
+  become: false
+  loop: "{{ aap_cert_rotate_components }}"
+
+- name: Read the supplied private keys
+  community.crypto.openssl_privatekey_info:
+    path: "{{ aap_cert_rotate_resolved[item].key }}"
+  register: aap_cert_rotate_key_info
+  delegate_to: localhost
+  become: false
+  no_log: true
+  loop: "{{ aap_cert_rotate_components }}"
+
+- name: Assert each certificate is valid now and past the minimum validity window
+  ansible.builtin.assert:
+    that:
+      - item.valid_at.window
+    fail_msg: >-
+      Certificate for '{{ item.item }}' is expired or expires within
+      {{ aap_cert_rotate_min_validity_days }} days
+      (notAfter {{ item.not_after }}). Rotating to it is pointless.
+  loop: "{{ aap_cert_rotate_cert_info.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+- name: Assert each private key matches its certificate
+  ansible.builtin.assert:
+    that:
+      - aap_cert_rotate_cert_info.results[idx].public_key_fingerprints.sha256 ==
+        aap_cert_rotate_key_info.results[idx].public_key_fingerprints.sha256
+    fail_msg: >-
+      The key supplied for '{{ item }}' does not match its certificate. Check
+      aap_cert_rotate_cert_src (or the wildcard cert and key).
+  loop: "{{ aap_cert_rotate_components }}"
+  loop_control:
+    index_var: idx
+
+- name: Report the subject, SANs, and expiry of each certificate
+  ansible.builtin.debug:
+    msg: >-
+      {{ item.item }}: subject={{ item.subject.commonName | default('n/a') }}
+      san={{ item.subject_alt_name | default([]) | join(',') }}
+      issuer={{ item.issuer.commonName | default('n/a') }}
+      notAfter={{ item.not_after }}
+  loop: "{{ aap_cert_rotate_cert_info.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+- name: Warn when an endpoint hostname is not covered by the certificate SANs
+  ansible.builtin.debug:
+    msg: >-
+      WARNING: {{ aap_cert_rotate_verify_endpoints[item] | split(':') | first }}
+      is not in the SAN list of the certificate for '{{ item }}'. Browsers and
+      the platform's own service-to-service calls will reject it.
+  loop: "{{ aap_cert_rotate_components }}"
+  when:
+    - item in aap_cert_rotate_verify_endpoints
+    - (aap_cert_rotate_verify_endpoints[item] | split(':') | first) not in
+      (aap_cert_rotate_cert_info.results[aap_cert_rotate_components.index(item)].subject_alt_name
+       | default([]) | map('regex_replace', '^DNS:', '') | list)

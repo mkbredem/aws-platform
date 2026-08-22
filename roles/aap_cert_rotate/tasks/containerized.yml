@@ -1,0 +1,153 @@
+---
+# Container-based installations (AAP 2.5 and later).
+#
+# Runs on the host holding the containerized installation program and its
+# inventory file, as the user that performed the installation (usually not
+# root). Everything the installation program does is a full platform restart.
+
+- name: Set the rotation timestamp
+  ansible.builtin.set_fact:
+    aap_cert_rotate_stamp: "{{ lookup('ansible.builtin.pipe', 'date +%Y%m%d-%H%M%S') }}"
+  run_once: true
+
+- name: Create the backup directory for this rotation
+  ansible.builtin.file:
+    path: "{{ aap_cert_rotate_backup_dir }}/{{ aap_cert_rotate_stamp }}"
+    state: directory
+    mode: "0700"
+
+- name: Back up the installation program inventory file
+  ansible.builtin.copy:
+    src: "{{ aap_cert_rotate_installer_dir }}/{{ aap_cert_rotate_inventory_file }}"
+    dest: "{{ aap_cert_rotate_backup_dir }}/{{ aap_cert_rotate_stamp }}/{{ aap_cert_rotate_inventory_file }}"
+    remote_src: true
+    mode: "0600"
+
+- name: Check which certificates are currently on disk
+  ansible.builtin.stat:
+    path: "{{ aap_cert_rotate_aap_data_dir }}/{{ aap_cert_rotate_containerized_paths[item.0][item.1] }}"
+  register: aap_cert_rotate_current
+  loop: "{{ aap_cert_rotate_components | product(['cert', 'key']) | list }}"
+  loop_control:
+    label: "{{ item.0 }}/{{ item.1 }}"
+
+- name: Back up the certificates currently on disk
+  ansible.builtin.copy:
+    src: "{{ item.stat.path }}"
+    dest: >-
+      {{ aap_cert_rotate_backup_dir }}/{{ aap_cert_rotate_stamp }}/{{ item.item.0 }}-{{
+      item.stat.path | basename }}
+    remote_src: true
+    mode: "0600"
+  loop: "{{ aap_cert_rotate_current.results }}"
+  loop_control:
+    label: "{{ item.item.0 }}/{{ item.item.1 }}"
+  when: item.stat.exists
+
+# --- custom mode -------------------------------------------------------------
+
+- name: Create the staging directory for the new certificate material
+  ansible.builtin.file:
+    path: "{{ aap_cert_rotate_staging_dir }}"
+    state: directory
+    mode: "0700"
+  when: aap_cert_rotate_mode == 'custom'
+
+- name: Stage the new certificates on the installer host
+  ansible.builtin.copy:
+    src: "{{ aap_cert_rotate_resolved[item].cert }}"
+    dest: "{{ aap_cert_rotate_staging_dir }}/{{ item }}.pem"
+    mode: "0644"
+  loop: "{{ aap_cert_rotate_components }}"
+  when: aap_cert_rotate_mode == 'custom'
+
+- name: Stage the new private keys on the installer host
+  ansible.builtin.copy:
+    src: "{{ aap_cert_rotate_resolved[item].key }}"
+    dest: "{{ aap_cert_rotate_staging_dir }}/{{ item }}.key"
+    mode: "0600"
+  loop: "{{ aap_cert_rotate_components }}"
+  no_log: true
+  when: aap_cert_rotate_mode == 'custom'
+
+- name: Stage the root certificate authority on the installer host
+  ansible.builtin.copy:
+    src: "{{ aap_cert_rotate_ca_cert }}"
+    dest: "{{ aap_cert_rotate_staging_dir }}/ca.pem"
+    mode: "0644"
+  when:
+    - aap_cert_rotate_mode == 'custom'
+    - aap_cert_rotate_ca_cert | length > 0
+
+- name: Point the inventory file at the new certificates
+  community.general.ini_file:
+    path: "{{ aap_cert_rotate_installer_dir }}/{{ aap_cert_rotate_inventory_file }}"
+    section: all:vars
+    option: "{{ item }}_tls_cert"
+    value: "{{ aap_cert_rotate_staging_dir }}/{{ item }}.pem"
+    no_extra_spaces: true
+    mode: "0600"
+    backup: true
+  loop: "{{ aap_cert_rotate_components }}"
+  when: aap_cert_rotate_mode == 'custom'
+
+- name: Point the inventory file at the new private keys
+  community.general.ini_file:
+    path: "{{ aap_cert_rotate_installer_dir }}/{{ aap_cert_rotate_inventory_file }}"
+    section: all:vars
+    option: "{{ item }}_tls_key"
+    value: "{{ aap_cert_rotate_staging_dir }}/{{ item }}.key"
+    no_extra_spaces: true
+    mode: "0600"
+  loop: "{{ aap_cert_rotate_components }}"
+  when: aap_cert_rotate_mode == 'custom'
+
+- name: Point the inventory file at the root certificate authority
+  community.general.ini_file:
+    path: "{{ aap_cert_rotate_installer_dir }}/{{ aap_cert_rotate_inventory_file }}"
+    section: all:vars
+    option: "{{ aap_cert_rotate_ca_inventory_var }}"
+    value: "{{ aap_cert_rotate_staging_dir }}/ca.pem"
+    no_extra_spaces: true
+    mode: "0600"
+  when:
+    - aap_cert_rotate_mode == 'custom'
+    - aap_cert_rotate_ca_cert | length > 0
+
+# --- regenerate mode ---------------------------------------------------------
+
+- name: Remove the existing certificates so the installation program regenerates them
+  ansible.builtin.file:
+    path: "{{ aap_cert_rotate_aap_data_dir }}/{{ aap_cert_rotate_containerized_paths[item.0][item.1] }}"
+    state: absent
+  loop: "{{ aap_cert_rotate_components | product(['cert', 'key']) | list }}"
+  loop_control:
+    label: "{{ item.0 }}/{{ item.1 }}"
+  when: aap_cert_rotate_mode == 'regenerate'
+
+# --- run the installation program --------------------------------------------
+
+- name: Run the containerized installation program
+  ansible.builtin.command:
+    cmd: "{{ aap_cert_rotate_containerized_install_cmd }}"
+    chdir: "{{ aap_cert_rotate_installer_dir }}"
+  register: aap_cert_rotate_installer_run
+  changed_when: true
+  timeout: "{{ aap_cert_rotate_installer_timeout | int }}"
+  when: aap_cert_rotate_run_installer | bool
+
+- name: Save the installation program output
+  ansible.builtin.copy:
+    content: "{{ aap_cert_rotate_installer_run.stdout | default('') }}"
+    dest: "{{ aap_cert_rotate_backup_dir }}/{{ aap_cert_rotate_stamp }}/installer.log"
+    mode: "0600"
+  when: aap_cert_rotate_run_installer | bool
+
+- name: Report what was staged when the installation program was skipped
+  ansible.builtin.debug:
+    msg: >-
+      Certificates staged in {{ aap_cert_rotate_staging_dir }} and the inventory
+      file updated. Nothing is in effect until the installation program runs:
+      cd {{ aap_cert_rotate_installer_dir }} &&
+      {{ aap_cert_rotate_containerized_install_cmd }}
+  when: not (aap_cert_rotate_run_installer | bool)

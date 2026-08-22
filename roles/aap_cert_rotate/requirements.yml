@@ -1,0 +1,11 @@
+---
+# Collections this role needs. Merge into collections/requirements.yml at the
+# project root if you sync this project into automation controller.
+#
+# ansible.controller is only needed to publish the job template in
+# files/controller_job_template.yml and ships with the certified content from
+# automation hub, not from Ansible Galaxy.
+collections:
+  - name: community.general
+  - name: community.crypto
+  - name: kubernetes.core

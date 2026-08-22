@@ -1,0 +1,143 @@
+---
+# Preflight: fail fast, before anything on the platform is touched.
+
+- name: Assert a supported install type was selected
+  ansible.builtin.assert:
+    that:
+      - aap_cert_rotate_install_type in ['containerized', 'operator', 'rpm']
+    fail_msg: >-
+      aap_cert_rotate_install_type must be one of containerized, operator, rpm
+      (got '{{ aap_cert_rotate_install_type }}').
+
+- name: Assert a supported rotation mode was selected
+  ansible.builtin.assert:
+    that:
+      - aap_cert_rotate_mode in ['custom', 'regenerate']
+    fail_msg: >-
+      aap_cert_rotate_mode must be custom or regenerate
+      (got '{{ aap_cert_rotate_mode }}').
+
+- name: Assert regenerate mode is not used against an operator-based install
+  ansible.builtin.assert:
+    that:
+      - aap_cert_rotate_mode != 'regenerate'
+    fail_msg: >-
+      Operator-based installations have no installation program to regenerate
+      certificates. Supply certificate material and use
+      aap_cert_rotate_mode=custom.
+  when: aap_cert_rotate_install_type == 'operator'
+
+- name: Assert every requested component is supported for this install type
+  ansible.builtin.assert:
+    that:
+      - aap_cert_rotate_components | difference(aap_cert_rotate_supported_components[aap_cert_rotate_install_type]) | length == 0
+    fail_msg: >-
+      Unsupported components for {{ aap_cert_rotate_install_type }}:
+      {{ aap_cert_rotate_components | difference(aap_cert_rotate_supported_components[aap_cert_rotate_install_type]) | join(', ') }}.
+      Supported: {{ aap_cert_rotate_supported_components[aap_cert_rotate_install_type] | join(', ') }}.
+
+- name: Assert this job is not rotating the platform that is running it
+  ansible.builtin.assert:
+    that:
+      - aap_cert_rotate_separate_control_plane | bool
+    fail_msg: >-
+      This play is running inside an automation controller job. Rotating the
+      certificates of the platform executing the job restarts the services
+      mid-run and the job will be lost. Launch it from a workstation or from a
+      separate AAP cluster. If this job is already targeting a different
+      cluster, set aap_cert_rotate_separate_control_plane=true.
+  when:
+    - aap_cert_rotate_block_self_rotation | bool
+    - awx_job_id is defined
+
+- name: Assert the downtime acknowledgement was given
+  ansible.builtin.assert:
+    that:
+      - aap_cert_rotate_accept_downtime | bool
+    fail_msg: >-
+      Rotating platform certificates restarts Ansible Automation Platform
+      services and interrupts running jobs. Set
+      aap_cert_rotate_accept_downtime=true to proceed.
+  when: aap_cert_rotate_run_installer | bool
+
+- name: Resolve the certificate material for each component in scope
+  ansible.builtin.set_fact:
+    aap_cert_rotate_resolved: >-
+      {{ aap_cert_rotate_resolved | default({}) | combine({
+           item: {
+             'cert': aap_cert_rotate_cert_src.get(item, {}).get('cert', aap_cert_rotate_wildcard_cert),
+             'key': aap_cert_rotate_cert_src.get(item, {}).get('key', aap_cert_rotate_wildcard_key)
+           }
+         }) }}
+  loop: "{{ aap_cert_rotate_components }}"
+  when: aap_cert_rotate_mode == 'custom'
+
+- name: Assert certificate material was supplied for every component in scope
+  ansible.builtin.assert:
+    that:
+      - aap_cert_rotate_resolved[item].cert | length > 0
+      - aap_cert_rotate_resolved[item].key | length > 0
+    fail_msg: >-
+      No certificate or key for '{{ item }}'. Add an entry to
+      aap_cert_rotate_cert_src, or set aap_cert_rotate_wildcard_cert and
+      aap_cert_rotate_wildcard_key.
+  loop: "{{ aap_cert_rotate_components }}"
+  when: aap_cert_rotate_mode == 'custom'
+
+- name: Confirm the certificate files exist on the control node
+  ansible.builtin.stat:
+    path: "{{ aap_cert_rotate_resolved[item.0][item.1] }}"
+  register: aap_cert_rotate_src_stat
+  delegate_to: localhost
+  become: false
+  loop: "{{ aap_cert_rotate_components | product(['cert', 'key']) | list }}"
+  loop_control:
+    label: "{{ item.0 }}/{{ item.1 }}"
+  when: aap_cert_rotate_mode == 'custom'
+
+- name: Assert every certificate file exists on the control node
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+    fail_msg: >-
+      Certificate material for '{{ item.item.0 }}' ({{ item.item.1 }}) not
+      found on the control node: {{ item.invocation.module_args.path }}
+  loop: "{{ aap_cert_rotate_src_stat.results | default([]) }}"
+  loop_control:
+    label: "{{ item.item.0 }}/{{ item.item.1 }}"
+  when: aap_cert_rotate_mode == 'custom'
+
+- name: Confirm the installation program directory and inventory are present
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: aap_cert_rotate_installer_stat
+  loop:
+    - "{{ aap_cert_rotate_installer_dir }}"
+    - "{{ aap_cert_rotate_installer_dir }}/{{ aap_cert_rotate_inventory_file }}"
+  when: aap_cert_rotate_install_type in ['containerized', 'rpm']
+
+- name: Assert the installation program directory and inventory are present
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+    fail_msg: >-
+      Not found on {{ inventory_hostname }}: {{ item.item }}. Set
+      aap_cert_rotate_installer_dir and aap_cert_rotate_inventory_file to the
+      installation program directory used to deploy this platform.
+  loop: "{{ aap_cert_rotate_installer_stat.results | default([]) }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: aap_cert_rotate_install_type in ['containerized', 'rpm']
+
+- name: Assert the OpenShift connection details are set
+  ansible.builtin.assert:
+    that:
+      - aap_cert_rotate_k8s_aap_name | length > 0
+      - (aap_cert_rotate_k8s_kubeconfig | length > 0) or
+        (aap_cert_rotate_k8s_host | length > 0 and aap_cert_rotate_k8s_api_key | length > 0)
+    fail_msg: >-
+      Set aap_cert_rotate_k8s_aap_name and either
+      aap_cert_rotate_k8s_kubeconfig or both aap_cert_rotate_k8s_host and
+      aap_cert_rotate_k8s_api_key (an OpenShift or Kubernetes API bearer token
+      credential in AAP supplies these).
+  when: aap_cert_rotate_install_type == 'operator'

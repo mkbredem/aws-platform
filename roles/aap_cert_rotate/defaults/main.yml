@@ -1,0 +1,149 @@
+---
+# =============================================================================
+# aap_cert_rotate - default variables
+#
+# UNSUPPORTED CONTENT. This role is not a Red Hat product, is not supported by
+# Red Hat or any Red Hat employee, and has not been validated against all
+# Ansible Automation Platform topologies. Read README.md before running it.
+# =============================================================================
+
+# --- Deployment type ---------------------------------------------------------
+# containerized | operator | rpm
+aap_cert_rotate_install_type: containerized
+
+# --- Rotation mode -----------------------------------------------------------
+# custom     -> you supply PEM material; the role stages it and points the
+#               installation program at it.
+# regenerate -> the installation program regenerates self-signed certificates
+#               (containerized: existing cert/key files are moved aside;
+#                RPM: aap_service_regen_cert=true is set in the inventory).
+#               Not valid for install type 'operator'.
+aap_cert_rotate_mode: custom
+
+# --- Components in scope -----------------------------------------------------
+# containerized: gateway controller hub eda postgresql receptor
+# rpm:           gateway controller hub eda
+# operator:      controller hub   (only these have a documented route_tls_secret)
+aap_cert_rotate_components:
+  - gateway
+  - controller
+  - hub
+  - eda
+
+# --- Safety interlocks -------------------------------------------------------
+# The installation program restarts every platform service. Nothing destructive
+# runs until this is explicitly set to true by the operator (or by a survey).
+aap_cert_rotate_accept_downtime: false
+
+# Set false to stage certificates and edit the inventory without running the
+# installation program - useful for a dry run or a change-window handoff.
+aap_cert_rotate_run_installer: true
+
+# Refuse to run when the play is executing inside an automation controller job
+# on the very platform being rotated. Leave true unless you are deliberately
+# driving a *different* AAP cluster from this one.
+aap_cert_rotate_block_self_rotation: true
+
+# Set true only when you have confirmed this job is launched from a workstation
+# or from a separate AAP cluster than the one being rotated.
+aap_cert_rotate_separate_control_plane: false
+
+# --- Certificate material (aap_cert_rotate_mode == 'custom') -----------------
+# Per-component PEM files on the Ansible control node (or in the project
+# directory when launched from automation controller). Server certificate
+# first, then any intermediate CA certificates, in one PEM file.
+#
+# aap_cert_rotate_cert_src:
+#   gateway:
+#     cert: files/tls/gateway.pem
+#     key: files/tls/gateway.key
+#   controller:
+#     cert: files/tls/controller.pem
+#     key: files/tls/controller.key
+aap_cert_rotate_cert_src: {}
+
+# Fallback used for any component with no entry in aap_cert_rotate_cert_src,
+# for example a single SAN or wildcard certificate covering the whole platform.
+aap_cert_rotate_wildcard_cert: ""
+aap_cert_rotate_wildcard_key: ""
+
+# Root certificate authority that signed the intermediate CA. Added to the
+# platform trust store by the installation program.
+aap_cert_rotate_ca_cert: ""
+
+# Validate the supplied PEM material (expiry, key match, SAN coverage) on the
+# control node before anything on the target is touched. Requires the
+# community.crypto collection.
+aap_cert_rotate_validate_input: true
+
+# Reject certificates that expire within this many days.
+aap_cert_rotate_min_validity_days: 30
+
+# --- Installation program (containerized and rpm) ----------------------------
+# Directory containing the installation program and its inventory file.
+aap_cert_rotate_installer_dir: "{{ ansible_env.HOME }}/aap-installer"
+aap_cert_rotate_inventory_file: inventory
+
+# Directory the staged PEM material is copied into on the installer host.
+aap_cert_rotate_staging_dir: "{{ aap_cert_rotate_installer_dir }}/tls"
+
+# Where inventory backups, displaced certificates, and installer logs are kept.
+aap_cert_rotate_backup_dir: "{{ ansible_env.HOME }}/aap-cert-rotate-backups"
+
+# Containerized: root of the AAP data directory holding the generated
+# certificates (the installation program default is ~/aap).
+aap_cert_rotate_aap_data_dir: "{{ ansible_env.HOME }}/aap"
+
+# Containerized installation program entry point. Confirm the collection name
+# against the installation program shipped with your release before running.
+aap_cert_rotate_containerized_install_cmd: >-
+  ansible-playbook -i {{ aap_cert_rotate_inventory_file }}
+  ansible.containerized_installer.install
+
+# RPM installation program entry point.
+aap_cert_rotate_rpm_install_cmd: ./setup.sh
+
+# Hard time limit for the installation program run, in seconds.
+aap_cert_rotate_installer_timeout: 5400
+
+# Inventory variable name used for the custom root CA. Confirm against the
+# inventory file variables appendix for your release and install type.
+aap_cert_rotate_ca_inventory_var: custom_ca_cert
+
+# --- Operator (OpenShift Container Platform) ---------------------------------
+aap_cert_rotate_k8s_namespace: ansible-automation-platform
+aap_cert_rotate_k8s_aap_name: ""
+aap_cert_rotate_k8s_api_version: aap.ansible.com/v1alpha1
+# Secret name suffix; the component name is prepended, for example
+# controller-certs-2026-08-22.
+aap_cert_rotate_k8s_secret_suffix: "certs-{{ ansible_date_time.date }}"
+# Connection details - supply a kubeconfig, or host plus api_key from an
+# OpenShift or Kubernetes API bearer token credential in AAP.
+aap_cert_rotate_k8s_kubeconfig: ""
+aap_cert_rotate_k8s_host: ""
+aap_cert_rotate_k8s_api_key: ""
+aap_cert_rotate_k8s_validate_certs: true
+# Seconds to wait for the operator to reconcile before verification runs.
+aap_cert_rotate_operator_settle_seconds: 180
+
+# --- Verification ------------------------------------------------------------
+aap_cert_rotate_verify: true
+
+# Endpoints checked after rotation. Keys must match component names.
+# aap_cert_rotate_verify_endpoints:
+#   gateway: aap.example.com:443
+#   controller: controller.example.com:443
+aap_cert_rotate_verify_endpoints: {}
+
+# Compare the served certificate with community.crypto.get_certificate. Set
+# false if that collection is not present in your execution environment.
+aap_cert_rotate_verify_use_crypto: true
+
+# Fail verification if the served certificate does not validate against the
+# control node trust store. Set false for self-signed or private-CA platforms
+# whose CA is not installed on the control node.
+aap_cert_rotate_verify_trust_chain: false
+
+# Write a Markdown rotation report to the control node.
+aap_cert_rotate_report: true
+aap_cert_rotate_report_dest: "./aap-cert-rotation-report.md"

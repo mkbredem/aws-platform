@@ -1,0 +1,85 @@
+---
+argument_specs:
+  main:
+    short_description: Rotate or renew Ansible Automation Platform TLS certificates
+    description:
+      - Unsupported community content. Not a Red Hat product, not supported by
+        Red Hat or any Red Hat employee, and not validated against every
+        Ansible Automation Platform topology.
+      - Running the installation program restarts every platform service.
+    options:
+      aap_cert_rotate_install_type:
+        description: Deployment type being rotated.
+        type: str
+        default: containerized
+        choices: [containerized, operator, rpm]
+      aap_cert_rotate_mode:
+        description:
+          - C(custom) stages certificate material you supply.
+          - C(regenerate) has the installation program regenerate self-signed
+            certificates. Not valid for operator-based installations.
+        type: str
+        default: custom
+        choices: [custom, regenerate]
+      aap_cert_rotate_components:
+        description: Platform components to rotate.
+        type: list
+        elements: str
+        default: [gateway, controller, hub, eda]
+      aap_cert_rotate_accept_downtime:
+        description: Acknowledgement that the platform will be restarted.
+        type: bool
+        default: false
+      aap_cert_rotate_run_installer:
+        description: Run the installation program. False stages changes only.
+        type: bool
+        default: true
+      aap_cert_rotate_separate_control_plane:
+        description:
+          - Confirms this job runs from a workstation or a different AAP
+            cluster than the one being rotated.
+        type: bool
+        default: false
+      aap_cert_rotate_cert_src:
+        description:
+          - Per-component PEM material on the control node, keyed by component
+            name, each with C(cert) and C(key) paths.
+        type: dict
+        default: {}
+      aap_cert_rotate_wildcard_cert:
+        description: Certificate used for components with no per-component entry.
+        type: str
+        default: ""
+      aap_cert_rotate_wildcard_key:
+        description: Private key used for components with no per-component entry.
+        type: str
+        default: ""
+      aap_cert_rotate_ca_cert:
+        description: Root certificate authority added to the platform trust store.
+        type: str
+        default: ""
+      aap_cert_rotate_installer_dir:
+        description: Directory holding the installation program and its inventory.
+        type: str
+      aap_cert_rotate_inventory_file:
+        description: Inventory file name inside the installation program directory.
+        type: str
+        default: inventory
+      aap_cert_rotate_k8s_namespace:
+        description: Namespace holding the AnsibleAutomationPlatform resource.
+        type: str
+        default: ansible-automation-platform
+      aap_cert_rotate_k8s_aap_name:
+        description: Name of the AnsibleAutomationPlatform custom resource.
+        type: str
+        default: ""
+      aap_cert_rotate_verify_endpoints:
+        description:
+          - Endpoints checked after rotation, keyed by component name, as
+            C(host:port).
+        type: dict
+        default: {}
+      aap_cert_rotate_verify:
+        description: Run post-rotation verification.
+        type: bool
+        default: true

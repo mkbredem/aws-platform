@@ -1,0 +1,64 @@
+---
+# Operator-based installations on OpenShift Container Platform.
+#
+# No installation program is involved: a new TLS secret is created and the
+# AnsibleAutomationPlatform custom resource is patched to reference it. The
+# operator reconciles the change, which restarts the affected pods - shorter
+# than an installer run, but still an interruption for the component.
+#
+# Only automation controller and automation hub have a documented
+# route_tls_secret parameter. Platform gateway and Event-Driven Ansible are
+# not handled here; confirm the current custom resource reference for your
+# release before assuming they behave the same way.
+#
+# These tasks run against the OpenShift API from the control node, so this
+# play can target localhost.
+
+- name: Create the TLS secrets in the platform namespace
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ aap_cert_rotate_k8s_kubeconfig | default(omit, true) }}"
+    host: "{{ aap_cert_rotate_k8s_host | default(omit, true) }}"
+    api_key: "{{ aap_cert_rotate_k8s_api_key | default(omit, true) }}"
+    validate_certs: "{{ aap_cert_rotate_k8s_validate_certs }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: kubernetes.io/tls
+      metadata:
+        name: "{{ item }}-{{ aap_cert_rotate_k8s_secret_suffix }}"
+        namespace: "{{ aap_cert_rotate_k8s_namespace }}"
+      data:
+        tls.crt: "{{ lookup('ansible.builtin.file', aap_cert_rotate_resolved[item].cert) | b64encode }}"
+        tls.key: "{{ lookup('ansible.builtin.file', aap_cert_rotate_resolved[item].key) | b64encode }}"
+  loop: "{{ aap_cert_rotate_components }}"
+  delegate_to: localhost
+  become: false
+  run_once: true
+  no_log: true
+
+- name: Patch the Ansible Automation Platform custom resource with the new secrets
+  kubernetes.core.k8s:
+    state: patched
+    kubeconfig: "{{ aap_cert_rotate_k8s_kubeconfig | default(omit, true) }}"
+    host: "{{ aap_cert_rotate_k8s_host | default(omit, true) }}"
+    api_key: "{{ aap_cert_rotate_k8s_api_key | default(omit, true) }}"
+    validate_certs: "{{ aap_cert_rotate_k8s_validate_certs }}"
+    api_version: "{{ aap_cert_rotate_k8s_api_version }}"
+    kind: AnsibleAutomationPlatform
+    name: "{{ aap_cert_rotate_k8s_aap_name }}"
+    namespace: "{{ aap_cert_rotate_k8s_namespace }}"
+    definition:
+      spec:
+        "{{ aap_cert_rotate_operator_spec_keys[item] }}":
+          route_tls_secret: "{{ item }}-{{ aap_cert_rotate_k8s_secret_suffix }}"
+  loop: "{{ aap_cert_rotate_components }}"
+  delegate_to: localhost
+  become: false
+  run_once: true
+
+- name: Wait for the operator to reconcile the change
+  ansible.builtin.pause:
+    seconds: "{{ aap_cert_rotate_operator_settle_seconds | int }}"
+  run_once: true
+  when: aap_cert_rotate_operator_settle_seconds | int > 0

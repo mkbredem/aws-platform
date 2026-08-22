@@ -1,0 +1,92 @@
+{
+  "name": "AAP TLS certificate rotation",
+  "description": "Unsupported content. Rotating platform certificates restarts Ansible Automation Platform services. Launch this from a management cluster, never from the platform being rotated.",
+  "spec": [
+    {
+      "question_name": "Installation type",
+      "question_description": "How the target Ansible Automation Platform was installed.",
+      "variable": "aap_cert_rotate_install_type",
+      "type": "multiplechoice",
+      "choices": "containerized\noperator\nrpm",
+      "default": "containerized",
+      "required": true
+    },
+    {
+      "question_name": "Rotation mode",
+      "question_description": "custom uses certificate material from the project or a credential. regenerate has the installation program create new self-signed certificates and is not valid for operator-based installations.",
+      "variable": "aap_cert_rotate_mode",
+      "type": "multiplechoice",
+      "choices": "custom\nregenerate",
+      "default": "custom",
+      "required": true
+    },
+    {
+      "question_name": "Components to rotate",
+      "question_description": "Operator-based installations support automation controller and automation hub only.",
+      "variable": "aap_cert_rotate_components",
+      "type": "multiselect",
+      "choices": "gateway\ncontroller\nhub\neda\npostgresql\nreceptor",
+      "default": "gateway\ncontroller\nhub\neda",
+      "required": true
+    },
+    {
+      "question_name": "I accept that the platform will be restarted and unavailable",
+      "question_description": "The installation program restarts every service. Running jobs on the target platform are interrupted. Select true only inside an approved change window.",
+      "variable": "aap_cert_rotate_accept_downtime",
+      "type": "multiplechoice",
+      "choices": "false\ntrue",
+      "default": "false",
+      "required": true
+    },
+    {
+      "question_name": "This job is NOT rotating the platform running it",
+      "question_description": "Confirm the target is a different Ansible Automation Platform cluster than the one executing this job.",
+      "variable": "aap_cert_rotate_separate_control_plane",
+      "type": "multiplechoice",
+      "choices": "false\ntrue",
+      "default": "false",
+      "required": true
+    },
+    {
+      "question_name": "Run the installation program",
+      "question_description": "false stages the certificates and edits the inventory file without applying anything - a dry run for a change-window handoff.",
+      "variable": "aap_cert_rotate_run_installer",
+      "type": "multiplechoice",
+      "choices": "true\nfalse",
+      "default": "true",
+      "required": true
+    },
+    {
+      "question_name": "Installation program directory",
+      "question_description": "Directory on the target host holding the installation program and its inventory file. Container-based and RPM-based only.",
+      "variable": "aap_cert_rotate_installer_dir",
+      "type": "text",
+      "default": "~/aap-installer",
+      "required": false
+    },
+    {
+      "question_name": "Inventory file name",
+      "question_description": "Inventory file inside the installation program directory.",
+      "variable": "aap_cert_rotate_inventory_file",
+      "type": "text",
+      "default": "inventory",
+      "required": false
+    },
+    {
+      "question_name": "OpenShift namespace",
+      "question_description": "Namespace holding the AnsibleAutomationPlatform custom resource. Operator-based only.",
+      "variable": "aap_cert_rotate_k8s_namespace",
+      "type": "text",
+      "default": "ansible-automation-platform",
+      "required": false
+    },
+    {
+      "question_name": "AnsibleAutomationPlatform resource name",
+      "question_description": "Name of the custom resource to patch. Operator-based only.",
+      "variable": "aap_cert_rotate_k8s_aap_name",
+      "type": "text",
+      "default": "",
+      "required": false
+    }
+  ]
+}

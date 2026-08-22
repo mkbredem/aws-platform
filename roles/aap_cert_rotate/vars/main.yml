@@ -1,0 +1,85 @@
+---
+# =============================================================================
+# aap_cert_rotate - internal maps
+#
+# Sourced from "Renewing and changing the SSL/TLS certificates" in the
+# Operating Ansible Automation Platform guide. Verify against the release you
+# are running before use; paths and variable names have changed between
+# releases.
+# =============================================================================
+
+# Components each install type can rotate with this role.
+aap_cert_rotate_supported_components:
+  containerized:
+    - gateway
+    - controller
+    - hub
+    - eda
+    - postgresql
+    - receptor
+  rpm:
+    - gateway
+    - controller
+    - hub
+    - eda
+  operator:
+    - controller
+    - hub
+
+# Containerized: inventory variable names are <component>_tls_cert/_tls_key,
+# so only the generated file paths need a map. Paths are relative to
+# aap_cert_rotate_aap_data_dir.
+aap_cert_rotate_containerized_paths:
+  controller:
+    cert: controller/etc/tower.cert
+    key: controller/etc/tower.key
+  eda:
+    cert: eda/etc/eda.cert
+    key: eda/etc/eda.key
+  gateway:
+    cert: gateway/etc/gateway.cert
+    key: gateway/etc/gateway.key
+  hub:
+    cert: hub/etc/pulp.cert
+    key: hub/etc/pulp.key
+  postgresql:
+    cert: postgresql/server.crt
+    key: postgresql/server.key
+  receptor:
+    cert: receptor/etc/receptor.crt
+    key: receptor/etc/receptor.key
+
+# RPM: inventory variable names per component.
+aap_cert_rotate_rpm_inventory_vars:
+  gateway:
+    cert: automationgateway_ssl_cert
+    key: automationgateway_ssl_key
+  controller:
+    cert: web_server_ssl_cert
+    key: web_server_ssl_key
+  hub:
+    cert: automationhub_ssl_cert
+    key: automationhub_ssl_key
+  eda:
+    cert: automationedacontroller_ssl_cert
+    key: automationedacontroller_ssl_key
+
+# RPM: installed certificate paths, used for the pre-change backup.
+aap_cert_rotate_rpm_paths:
+  controller:
+    cert: /etc/tower/tower.cert
+    key: /etc/tower/tower.key
+  hub:
+    cert: /etc/pulp/certs/pulp_webserver.crt
+    key: /etc/pulp/certs/pulp_webserver.key
+  eda:
+    cert: /etc/ansible-automation-platform/eda/server.cert
+    key: /etc/ansible-automation-platform/eda/server.key
+  gateway:
+    cert: /etc/ansible-automation-platform/gateway/gateway.cert
+    key: /etc/ansible-automation-platform/gateway/gateway.key
+
+# Operator: custom resource key that carries the route TLS secret per component.
+aap_cert_rotate_operator_spec_keys:
+  controller: controller
+  hub: hub

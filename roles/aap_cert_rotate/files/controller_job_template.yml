@@ -1,0 +1,66 @@
+---
+# =============================================================================
+# Create the certificate rotation job template on a MANAGEMENT automation
+# controller - one that is not the platform being rotated.
+#
+# UNSUPPORTED CONTENT. See roles/aap_cert_rotate/README.md.
+#
+# Connection details come from the ansible.controller collection's standard
+# environment variables (CONTROLLER_HOST, CONTROLLER_OAUTH_TOKEN or
+# CONTROLLER_USERNAME/CONTROLLER_PASSWORD, CONTROLLER_VERIFY_SSL) or from a Red
+# Hat Ansible Automation Platform credential attached to the job that runs this
+# playbook. Never pass them as plaintext extra variables.
+#
+# Every value below is a variable. Override on the command line or in a
+# group_vars file, for example:
+#
+#   ansible-playbook roles/aap_cert_rotate/files/controller_job_template.yml \
+#     -e aap_cert_rotate_jt_organization="Platform Engineering" \
+#     -e aap_cert_rotate_jt_project="aws-platform" \
+#     -e aap_cert_rotate_jt_inventory="AAP Installer Hosts" \
+#     -e aap_cert_rotate_jt_machine_credential="aap-installer-ssh"
+# =============================================================================
+
+- name: Publish the AAP TLS certificate rotation job template
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  vars:
+    aap_cert_rotate_jt_name: "AAP - Rotate TLS certificates (UNSUPPORTED)"
+    aap_cert_rotate_jt_organization: Default
+    aap_cert_rotate_jt_project: aws-platform
+    aap_cert_rotate_jt_inventory: AAP Installer Hosts
+    aap_cert_rotate_jt_playbook: rotate_aap_certs.yml
+    aap_cert_rotate_jt_machine_credential: aap-installer-ssh
+    # Execution environment carrying community.general, community.crypto, and
+    # kubernetes.core. The default supported execution environment does not
+    # necessarily include all three.
+    aap_cert_rotate_jt_execution_environment: aap-cert-rotate-ee
+    aap_cert_rotate_jt_survey: "{{ playbook_dir }}/aap_cert_rotate_survey.json"
+
+  tasks:
+    - name: Create the job template
+      ansible.controller.job_template:
+        name: "{{ aap_cert_rotate_jt_name }}"
+        description: >-
+          Unsupported content. Rotates or renews Ansible Automation Platform
+          TLS certificates on a remote cluster. Restarts every service on the
+          target platform. Do not point this at the cluster running it.
+        job_type: run
+        organization: "{{ aap_cert_rotate_jt_organization }}"
+        project: "{{ aap_cert_rotate_jt_project }}"
+        playbook: "{{ aap_cert_rotate_jt_playbook }}"
+        inventory: "{{ aap_cert_rotate_jt_inventory }}"
+        execution_environment: "{{ aap_cert_rotate_jt_execution_environment }}"
+        credentials:
+          - "{{ aap_cert_rotate_jt_machine_credential }}"
+        # The target is a different cluster, so the self-rotation guard is
+        # answered here rather than left to the operator.
+        extra_vars:
+          aap_cert_rotate_separate_control_plane: true
+        ask_variables_on_launch: false
+        become_enabled: false
+        survey_enabled: true
+        survey_spec: "{{ lookup('ansible.builtin.file', aap_cert_rotate_jt_survey) | from_json }}"
+        state: present

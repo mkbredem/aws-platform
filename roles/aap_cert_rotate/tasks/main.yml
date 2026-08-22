@@ -1,0 +1,48 @@
+---
+# =============================================================================
+# aap_cert_rotate - entry point
+#
+# UNSUPPORTED CONTENT. Not a Red Hat product, not supported by Red Hat or any
+# Red Hat employee, not validated against all environments. See README.md.
+# =============================================================================
+
+- name: Display the unsupported-content and downtime notice
+  ansible.builtin.debug:
+    msg:
+      - "aap_cert_rotate is UNSUPPORTED community content. It is not a Red Hat"
+      - "product, is not supported by Red Hat or any Red Hat employee, and has"
+      - "not been validated against every Ansible Automation Platform topology."
+      - "Running the installation program restarts every platform service:"
+      - "expect a full outage for the duration of the run."
+      - "Run this from a workstation or a separate AAP cluster - never from the"
+      - "platform being rotated."
+      - "Install type: {{ aap_cert_rotate_install_type }} | mode: {{ aap_cert_rotate_mode }}"
+      - "Components: {{ aap_cert_rotate_components | join(', ') }}"
+  run_once: true
+
+- name: Run preflight checks
+  ansible.builtin.include_tasks: preflight.yml
+
+- name: Validate the supplied certificate material
+  ansible.builtin.include_tasks: validate_input_certs.yml
+  when:
+    - aap_cert_rotate_mode == 'custom'
+    - aap_cert_rotate_validate_input | bool
+
+- name: Rotate certificates for a container-based installation
+  ansible.builtin.include_tasks: containerized.yml
+  when: aap_cert_rotate_install_type == 'containerized'
+
+- name: Rotate certificates for an operator-based installation
+  ansible.builtin.include_tasks: operator.yml
+  when: aap_cert_rotate_install_type == 'operator'
+
+- name: Rotate certificates for an RPM-based installation
+  ansible.builtin.include_tasks: rpm.yml
+  when: aap_cert_rotate_install_type == 'rpm'
+
+- name: Verify the certificates now served by the platform
+  ansible.builtin.include_tasks: verify.yml
+  when:
+    - aap_cert_rotate_verify | bool
+    - aap_cert_rotate_verify_endpoints | length > 0

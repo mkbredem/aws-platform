@@ -1,0 +1,84 @@
+---
+# Post-rotation verification. Everything here runs from the control node
+# against the platform's public endpoints, which is what a user or an
+# integrating system actually sees.
+
+- name: Build the list of endpoints to check
+  ansible.builtin.set_fact:
+    aap_cert_rotate_check_list: >-
+      {{ aap_cert_rotate_components
+         | select('in', aap_cert_rotate_verify_endpoints.keys() | list)
+         | list }}
+  run_once: true
+
+- name: Retrieve the certificate now served by each endpoint
+  community.crypto.get_certificate:
+    host: "{{ aap_cert_rotate_verify_endpoints[item] | split(':') | first }}"
+    port: "{{ (aap_cert_rotate_verify_endpoints[item] | split(':') | last) | int }}"
+  register: aap_cert_rotate_served
+  delegate_to: localhost
+  become: false
+  run_once: true
+  loop: "{{ aap_cert_rotate_check_list }}"
+  when: aap_cert_rotate_verify_use_crypto | bool
+
+- name: Assert each endpoint serves a certificate that is not expired
+  ansible.builtin.assert:
+    that:
+      - not item.expired
+    fail_msg: >-
+      {{ aap_cert_rotate_verify_endpoints[item.item] }} is serving an expired
+      certificate (notAfter {{ item.not_after }}).
+    success_msg: >-
+      {{ aap_cert_rotate_verify_endpoints[item.item] }} serves
+      subject={{ item.subject.commonName | default('n/a') }}
+      issuer={{ item.issuer.commonName | default('n/a') }}
+      notAfter={{ item.not_after }}
+  run_once: true
+  loop: "{{ aap_cert_rotate_served.results | default([]) }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: aap_cert_rotate_verify_use_crypto | bool
+
+- name: Assert each endpoint serves the certificate that was supplied
+  ansible.builtin.assert:
+    that:
+      - aap_cert_rotate_served.results[idx].serial_number ==
+        aap_cert_rotate_cert_info.results[aap_cert_rotate_components.index(item)].serial_number
+    fail_msg: >-
+      {{ aap_cert_rotate_verify_endpoints[item] }} is not serving the
+      certificate supplied for '{{ item }}'. The installation program may have
+      skipped the component, or the endpoint is fronted by a load balancer
+      terminating TLS elsewhere.
+  run_once: true
+  loop: "{{ aap_cert_rotate_check_list }}"
+  loop_control:
+    index_var: idx
+  when:
+    - aap_cert_rotate_verify_use_crypto | bool
+    - aap_cert_rotate_mode == 'custom'
+    - aap_cert_rotate_cert_info is defined
+
+- name: Check that each endpoint responds over TLS
+  ansible.builtin.uri:
+    url: "https://{{ aap_cert_rotate_verify_endpoints[item] }}/api/"
+    validate_certs: "{{ aap_cert_rotate_verify_trust_chain | bool }}"
+    status_code: [200, 301, 302, 401, 403]
+  register: aap_cert_rotate_endpoint_check
+  delegate_to: localhost
+  become: false
+  run_once: true
+  loop: "{{ aap_cert_rotate_check_list }}"
+  retries: 10
+  delay: 30
+  until: aap_cert_rotate_endpoint_check is succeeded
+
+- name: Write the rotation report
+  ansible.builtin.template:
+    src: rotation_report.md.j2
+    dest: "{{ aap_cert_rotate_report_dest }}"
+    mode: "0644"
+  delegate_to: localhost
+  become: false
+  run_once: true
+  when: aap_cert_rotate_report | bool

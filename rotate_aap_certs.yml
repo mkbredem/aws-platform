@@ -1,0 +1,36 @@
+---
+# =============================================================================
+# rotate_aap_certs.yml
+#
+# Rotate or renew the TLS certificates used by Red Hat Ansible Automation
+# Platform (container-based, operator-based, or RPM-based).
+#
+# UNSUPPORTED CONTENT. This playbook and the aap_cert_rotate role are not a Red
+# Hat product, are not supported by Red Hat or any Red Hat employee, and have
+# not been validated against all environments. See
+# roles/aap_cert_rotate/README.md.
+#
+# CAVEATS
+#   * You will take an outage. The installation program restarts every platform
+#     service on container-based and RPM-based installations. On operator-based
+#     installations the affected pods restart.
+#   * Run this from a workstation or from a SEPARATE Ansible Automation
+#     Platform cluster. Launching it from the platform being rotated kills the
+#     job partway through the installer run.
+#   * Nothing destructive runs until aap_cert_rotate_accept_downtime=true.
+#     Set aap_cert_rotate_run_installer=false for a staging-only dry run.
+#
+# Target host:
+#   container-based / RPM-based -> the host holding the installation program
+#                                  and its inventory file
+#   operator-based              -> localhost (talks to the OpenShift API)
+# =============================================================================
+
+- name: Rotate Ansible Automation Platform TLS certificates
+  hosts: "{{ aap_cert_rotate_target_group | default('aap_installer') }}"
+  gather_facts: true
+  become: false
+  any_errors_fatal: true
+
+  roles:
+    - role: aap_cert_rotate

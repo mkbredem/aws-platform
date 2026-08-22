@@ -1,0 +1,23 @@
+---
+galaxy_info:
+  role_name: aap_cert_rotate
+  author: Michael Bredemeier
+  description: >-
+    Rotate or renew the TLS certificates used by Red Hat Ansible Automation
+    Platform on container-based, operator-based, and RPM-based installations.
+    Unsupported community content - see README.md.
+  company: unaffiliated
+  license: MIT
+  min_ansible_version: "2.16"
+  platforms:
+    - name: EL
+      versions:
+        - "8"
+        - "9"
+  galaxy_tags:
+    - aap
+    - ansible
+    - tls
+    - certificates
+
+dependencies: []
